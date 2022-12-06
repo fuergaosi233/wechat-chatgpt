@@ -20,10 +20,10 @@ npm install && poetry install
 ```
 
 ## Usage
-### First Registe Openai Account
+### Registe Openai Account
 You need get OpenAI account and password. It's the helpful [article](https://mirror.xyz/boxchen.eth/9O9CSqyKDj4BKUIil7NC1Sa1LJM-3hsPqaeW_QjfFBc) if you live in China🇨🇳.
-### Second Config Project
-You need copy config file to config your project
+### Config Project
+You need copy config file to config your project and **change it**
 ```sh
 cp config.yaml.example config.yaml
 ```
@@ -31,7 +31,7 @@ cp config.yaml.example config.yaml
 ```sh
 npm run dev
 ```
-If you are logging in for the first time, then you need to scan the code.
+If you are logging in for the first time, then you need to scan the qrcode.
 ## Author
 
 👤 **holegots**
