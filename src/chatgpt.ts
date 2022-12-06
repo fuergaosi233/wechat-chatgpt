@@ -78,12 +78,13 @@ export class ChatGPTBot {
   async command(): Promise<void> {}
   // remove more times conversation and mention
   cleanMessage(text: string): string {
-    let realText = text.replace("@🍍", "");
-    // remove more text via - - - - - - - - - - - - - - -
-    const item = realText.split("- - - - - - - - - - - - - - -");
+    let realText = text;
+    const item = text.split("- - - - - - - - - - - - - - -");
     if (item.length > 1) {
       realText = item[item.length - 1];
     }
+    realText = text.replace("@🍍", "");
+    // remove more text via - - - - - - - - - - - - - - -
     return realText;
   }
   async getGPTMessage(text: string): Promise<string> {
