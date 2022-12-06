@@ -13,6 +13,16 @@
 
 ### 🏠 [Homepage](https://github.com/fuergaosi233/wechat-chatgpt)
 
+## 🌟 Feature
+- [x] Use ChatGPT On Wechat via wechaty
+- [x] Support OpenAI Accounts Pool
+- [x] Support use proxy to login
+- [X] Simulated at message receive
+- [ ] Add conversions Support
+- [ ] Add Dockerfile
+- [ ] Add Railray deploy
+- [ ] Auto Reload OpenAI Accounts Pool
+
 ## Install
 
 ```sh
@@ -27,7 +37,7 @@ You need copy config file to config your project and **change it**
 ```sh
 cp config.yaml.example config.yaml
 ```
-### Third 
+### Start Project
 ```sh
 npm run dev
 ```
