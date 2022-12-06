@@ -10,6 +10,10 @@ export class ChatGPTBot {
   conversations = new Map<string, string>();
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
   cache = new Cache("cache.json");
+  botName: string = "";
+  setBotName(botName: string) {
+    this.botName = botName;
+  }
   async getSessionToken(email: string, password: string): Promise<string> {
     if (this.cache.get(email)) {
       return this.cache.get(email);
@@ -92,6 +96,9 @@ export class ChatGPTBot {
   }
   async onMessage(message: Message) {
     const talker = message.talker();
+    if (talker.self()) {
+      return;
+    }
     const text = message.text();
     const room = message.room();
     if (!room) {
@@ -100,7 +107,8 @@ export class ChatGPTBot {
       await talker.say(response);
       return;
     }
-    if (!text.includes("@🍍")) {
+    // The bot should reply mention message
+    if (!text.includes(`@${this.botName}`)) {
       return;
     }
     const realText = this.cleanMessage(text);

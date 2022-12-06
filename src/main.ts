@@ -17,6 +17,7 @@ bot
   })
   .on("login", async (user) => {
     console.log(`User ${user} logged in`);
+    chatGPTBot.setBotName(user.name());
     await chatGPTBot.startGPTBot();
   })
   .on("message", async (message) => {

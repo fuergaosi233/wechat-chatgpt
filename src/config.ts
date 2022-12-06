@@ -5,7 +5,5 @@ const file = fs.readFileSync("./config.yaml", "utf8");
 const configFile = parse(file);
 dotenv.config();
 export const config = {
-  chatgptPool: process.env.CHATGPT_POOL?.split(",") || [],
   chatGPTAccountPool: configFile.chatGPTAccountPool,
-  generatorFile: `generate_session.py`,
 };
