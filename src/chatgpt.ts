@@ -3,6 +3,7 @@ import { Message } from "wechaty";
 import { config } from "./config.js";
 import { execa } from "execa";
 import { Cache } from "./cache.js";
+import { ContactInterface, RoomInterface } from "wechaty/impls";
 
 export class ChatGPTBot {
   // Record talkid with conversation id
@@ -102,8 +103,25 @@ export class ChatGPTBot {
     try {
       return await conversation.sendMessage(text);
     } catch (e) {
+      this.resetConversation(talkerId);
       console.error(e);
       return String(e);
+    }
+  }
+  // The message is segmented according to its size
+  async trySay(
+    talker: RoomInterface | ContactInterface,
+    mesasge: string
+  ): Promise<void> {
+    const messages: Array<string> = [];
+    let message = mesasge;
+    while (message.length > 300) {
+      messages.push(message.slice(0, 300));
+      message = message.slice(300);
+    }
+    messages.push(message);
+    for (const msg of messages) {
+      await talker.say(msg);
     }
   }
   async onMessage(message: Message) {
@@ -116,7 +134,7 @@ export class ChatGPTBot {
     if (!room) {
       console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
       const response = await this.getGPTMessage(text, talker.id);
-      await talker.say(response);
+      await this.trySay(talker, response);
       return;
     }
     let realText = this.cleanMessage(text);
@@ -134,6 +152,6 @@ export class ChatGPTBot {
     console.log(`Hit GPT Enabled Group: ${topic} in room: ${room.id}`);
     const response = await this.getGPTMessage(realText, talker.id);
     const result = `${realText}\n ------\n ${response}`;
-    await room.say(result, talker);
+    await this.trySay(room, result);
   }
 }
