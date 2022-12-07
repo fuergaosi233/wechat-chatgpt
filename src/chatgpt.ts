@@ -108,13 +108,13 @@ export class ChatGPTBot {
   }
   async onMessage(message: Message) {
     const talker = message.talker();
-    if (talker.self()) {
+    if (talker.self() || message.type() > 10) {
       return;
     }
     const text = message.text();
     const room = message.room();
     if (!room) {
-      console.log(`Hit GPT Enabled User: ${talker.name()}`);
+      console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
       const response = await this.getGPTMessage(text, talker.id);
       await talker.say(response);
       return;
