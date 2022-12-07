@@ -21,7 +21,7 @@ bot
     await chatGPTBot.startGPTBot();
   })
   .on("message", async (message) => {
-    if (message.text().includes("/ping")) {
+    if (message.text().startsWith("/ping ")) {
       await message.say("pong");
       return;
     }

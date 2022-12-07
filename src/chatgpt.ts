@@ -10,7 +10,7 @@ export class ChatGPTBot {
   conversations = new Map<string, string>();
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
   cache = new Cache("cache.json");
-  botName: string = "";
+  botName: string = config.botName;
   setBotName(botName: string) {
     this.botName = botName;
   }
@@ -124,7 +124,7 @@ export class ChatGPTBot {
     if (!realText.includes(`@${this.botName}`)) {
       return;
     }
-    realText = text.replace("@🍍", "");
+    realText = text.replace(`@${this.botName}`, "");
     const topic = await room.topic();
     console.debug(
       `receive message: ${realText} from ${talker.name()} in ${topic}, room: ${

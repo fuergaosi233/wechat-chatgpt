@@ -6,4 +6,5 @@ const configFile = parse(file);
 dotenv.config();
 export const config = {
   chatGPTAccountPool: configFile.chatGPTAccountPool,
+  botName: configFile.botName,
 };
