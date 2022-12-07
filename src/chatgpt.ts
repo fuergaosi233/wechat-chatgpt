@@ -1,13 +1,12 @@
-import { ChatGPTAPI } from "chatgpt";
+import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { Message } from "wechaty";
 import { config } from "./config.js";
-import * as uuid from "uuid";
 import { execa } from "execa";
 import { Cache } from "./cache.js";
 
 export class ChatGPTBot {
   // Record talkid with conversation id
-  conversations = new Map<string, string>();
+  conversations = new Map<string, ChatGPTConversation>();
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
   cache = new Cache("cache.json");
   botName: string = "";
@@ -73,16 +72,18 @@ export class ChatGPTBot {
     const index = Math.floor(Math.random() * this.chatGPTPools.length);
     return this.chatGPTPools[index];
   }
-  resetConversationID(talkerId: string): void {
-    this.conversations.set(talkerId, uuid.v4());
+  resetConversation(talkerId: string): void {
+    const chatgpt = this.chatgpt;
+    this.conversations.set(talkerId, chatgpt.getConversation());
   }
-  getConversationID(talkerId: string): string {
-    if (this.conversations.get(talkerId)) {
-      return this.conversations.get(talkerId) as string;
+  getConversation(talkerId: string): ChatGPTConversation {
+    const chatgpt = this.chatgpt;
+    if (this.conversations.get(talkerId) !== undefined) {
+      return this.conversations.get(talkerId) as ChatGPTConversation;
     }
-    const conversationId = uuid.v4();
-    this.conversations.set(talkerId, conversationId);
-    return conversationId;
+    const conversation = chatgpt.getConversation();
+    this.conversations.set(talkerId, conversation);
+    return conversation;
   }
   // TODO: Add reset conversation id and ping pong
   async command(): Promise<void> {}
@@ -96,12 +97,11 @@ export class ChatGPTBot {
     // remove more text via - - - - - - - - - - - - - - -
     return realText;
   }
-  async getGPTMessage(text: string): Promise<string> {
-    const chatgpt = this.chatgpt;
+  async getGPTMessage(text: string, talkerId: string): Promise<string> {
+    const conversation = this.getConversation(talkerId);
     try {
-      return await chatgpt.sendMessage(text);
+      return await conversation.sendMessage(text);
     } catch (e) {
-      chatgpt.refreshAccessToken();
       console.error(e);
       return String(e);
     }
@@ -115,7 +115,7 @@ export class ChatGPTBot {
     const room = message.room();
     if (!room) {
       console.log(`Hit GPT Enabled User: ${talker.name()}`);
-      const response = await this.getGPTMessage(text);
+      const response = await this.getGPTMessage(text, talker.id);
       await talker.say(response);
       return;
     }
@@ -124,7 +124,7 @@ export class ChatGPTBot {
     if (!realText.includes(`@${this.botName}`)) {
       return;
     }
-    realText = text.replace("@🍍", "");
+    realText = text.replace(`@${this.botName}`, "");
     const topic = await room.topic();
     console.debug(
       `receive message: ${realText} from ${talker.name()} in ${topic}, room: ${
@@ -132,7 +132,7 @@ export class ChatGPTBot {
       }`
     );
     console.log(`Hit GPT Enabled Group: ${topic} in room: ${room.id}`);
-    const response = await this.getGPTMessage(realText);
+    const response = await this.getGPTMessage(realText, talker.id);
     const result = `${realText}\n ------\n ${response}`;
     await room.say(result, talker);
   }

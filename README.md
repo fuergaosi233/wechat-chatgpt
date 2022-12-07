@@ -18,7 +18,7 @@
 - [x] Support OpenAI Accounts Pool
 - [x] Support use proxy to login
 - [X] Simulated at message receive
-- [ ] Add conversions Support
+- [X] Add conversation Support (Everyone will have their own session)
 - [ ] Add Dockerfile
 - [ ] Add Railray deploy
 - [ ] Auto Reload OpenAI Accounts Pool
