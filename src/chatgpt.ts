@@ -126,7 +126,7 @@ export class ChatGPTBot {
   }
   async onMessage(message: Message) {
     const talker = message.talker();
-    if (talker.self() || message.type() > 10) {
+    if (talker.self() || message.type() > 10 || talker.name() == "微信团队") {
       return;
     }
     const text = message.text();
