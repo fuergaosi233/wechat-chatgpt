@@ -5,6 +5,7 @@ import os
 import sys
 import logging
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s: %(funcName)s: %(lineno)d: %(message)s')
 logger = logging.getLogger(__name__)
 
 def login(email, password):
