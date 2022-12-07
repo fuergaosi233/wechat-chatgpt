@@ -30,13 +30,39 @@ npm install && poetry install
 ```
 
 ## Usage
-### Registe Openai Account
-You need get OpenAI account and password. It's the helpful [article](https://mirror.xyz/boxchen.eth/9O9CSqyKDj4BKUIil7NC1Sa1LJM-3hsPqaeW_QjfFBc) if you live in China🇨🇳.
-### Config Project
-You need copy config file to config your project and **change it**
+### Copy config
+You need copy config file for setting up your project.
 ```sh
 cp config.yaml.example config.yaml
 ```
+### Get and config Openai account
+> If you don't have this OpenAI account and you live in China, you can get it [here](https://mirror.xyz/boxchen.eth/9O9CSqyKDj4BKUIil7NC1Sa1LJM-3hsPqaeW_QjfFBc).
+#### **A：Use account and password**
+You need get OpenAI account and password.
+Your config.yaml should be like this:
+```yaml
+chatGPTAccountPool:
+  - email: <your email>
+    password: <your password>
+```
+⚠️ Pls make sure your network can log in to OpenAI, and if you fail to login in try setting up a proxy or using SessionToken.  
+**Setup proxy:**
+```sh
+export http_proxy=<Your Proxy>
+```
+#### **B: Use Session Token**
+If you cant use email and password to login your openai account or your network can't login, you can use session token. You need to follow these steps:  
+1. Go to https://chat.openai.com/chat and log in or sign up.
+2. Open dev tools.
+3. Open Application > Cookies.
+![image](docs/images/session-token.png)
+4. Copy the value for __Secure-next-auth.session-token and save it to your config
+Your config.yaml should be like this:
+```yaml
+chatGPTAccountPool:
+  - session_token: <your session_token>
+```
+
 ### Start Project
 ```sh
 npm run dev

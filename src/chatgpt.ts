@@ -37,10 +37,20 @@ export class ChatGPTBot {
       await Promise.all(
         config.chatGPTAccountPool.map(
           async (account: {
-            email: string;
-            password: string;
+            email?: string;
+            password?: string;
+            session_token?: string;
           }): Promise<string> => {
-            return await this.getSessionToken(account.email, account.password);
+            if (account.session_token) {
+              return account.session_token;
+            } else if (account.email && account.password) {
+              return await this.getSessionToken(
+                account.email,
+                account.password
+              );
+            } else {
+              return "";
+            }
           }
         )
       )
@@ -51,7 +61,7 @@ export class ChatGPTBot {
           sessionToken: token,
         });
       });
-    console.log(`chatgpt pool size: ${chatGPTPools.length}`);
+    console.log(`Chatgpt pool size: ${chatGPTPools.length}`);
     this.chatGPTPools = chatGPTPools;
   }
   get chatgpt(): ChatGPTAPI {
@@ -83,14 +93,15 @@ export class ChatGPTBot {
     if (item.length > 1) {
       realText = item[item.length - 1];
     }
-    realText = text.replace("@🍍", "");
     // remove more text via - - - - - - - - - - - - - - -
     return realText;
   }
   async getGPTMessage(text: string): Promise<string> {
+    const chatgpt = this.chatgpt;
     try {
-      return await this.chatgpt.sendMessage(text);
+      return await chatgpt.sendMessage(text);
     } catch (e) {
+      chatgpt.refreshAccessToken();
       console.error(e);
       return String(e);
     }
@@ -108,11 +119,12 @@ export class ChatGPTBot {
       await talker.say(response);
       return;
     }
+    let realText = this.cleanMessage(text);
     // The bot should reply mention message
-    if (!text.includes(`@${this.botName}`)) {
+    if (!realText.includes(`@${this.botName}`)) {
       return;
     }
-    const realText = this.cleanMessage(text);
+    realText = text.replace("@🍍", "");
     const topic = await room.topic();
     console.debug(
       `receive message: ${realText} from ${talker.name()} in ${topic}, room: ${
