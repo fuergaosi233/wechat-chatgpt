@@ -3,6 +3,10 @@
 
 import os
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
+
 def login(email, password):
     chatbot = Chatbot(
         config={
@@ -23,7 +27,7 @@ if __name__ == "__main__":
         from revChatGPT.revChatGPT import Chatbot
     except:
         raise RuntimeError("Could import revChatGPT. Please install it first.You can run `poetry install` to install it.")
-    print(sys.argv)
+    logger.info("Login with email: %s", sys.argv[1])
     email = sys.argv[1]
     password = sys.argv[2]
-    print(login(email, password))
+    logger.info(f"Session token: {login(email, password)}")
