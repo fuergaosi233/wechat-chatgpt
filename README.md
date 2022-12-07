@@ -19,17 +19,26 @@
 - [x] Support use proxy to login
 - [X] Simulated at message receive
 - [X] Add conversation Support (Everyone will have their own session)
-- [ ] Add Dockerfile
+- [X] Add Dockerfile
+- [ ] Publish to Docker.hub
 - [ ] Add Railray deploy
 - [ ] Auto Reload OpenAI Accounts Pool
 
+## Use with docker
+
+```sh
+cp config.yaml.example config.yaml
+# Change Config.yaml
+docker build -t wechat-chatgpt .
+docker run -v $(pwd)/config.yaml:/app/config.yaml wechat-chatgpt
+```
 ## Install
 
 ```sh
 npm install && poetry install
 ```
 
-## Usage
+## Usage with manual
 ### Copy config
 You need copy config file for setting up your project.
 ```sh
