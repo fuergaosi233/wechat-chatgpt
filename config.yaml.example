@@ -1,4 +1,3 @@
-botName: WeChat Username
 chatGPTAccountPool:
   - email: email
     password: password

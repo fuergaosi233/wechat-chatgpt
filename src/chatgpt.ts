@@ -10,7 +10,7 @@ export class ChatGPTBot {
   conversations = new Map<string, string>();
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
   cache = new Cache("cache.json");
-  botName: string = config.botName;
+  botName: string = "";
   setBotName(botName: string) {
     this.botName = botName;
   }
