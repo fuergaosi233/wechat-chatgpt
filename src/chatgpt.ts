@@ -12,6 +12,7 @@ export class ChatGPTBot {
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
   cache = new Cache("cache.json");
   botName: string = "";
+  triggerKeywords: string = ""
   setBotName(botName: string) {
     this.botName = botName;
   }
@@ -41,7 +42,11 @@ export class ChatGPTBot {
             email?: string;
             password?: string;
             session_token?: string;
+            trigger_keywords?:string;
           }): Promise<string> => {
+            if(account.trigger_keywords){
+                this.triggerKeywords = account.trigger_keywords
+            }
             if (account.session_token) {
               return account.session_token;
             } else if (account.email && account.password) {
@@ -133,8 +138,18 @@ export class ChatGPTBot {
     const text = message.text();
     const room = message.room();
     if (!room) {
-      console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
-      if(text.indexOf("提问") == 0){
+      let canSend = false;
+      if(this.triggerKeywords){
+          if(text.indexOf(this.triggerKeywords) == 0){
+              console.log(`🎯 Hit GPT Enabled User by Trigger keywords:${this.triggerKeywords} , User:${talker.name()}`);
+              canSend = true
+          }
+      }else{
+          console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
+          canSend = true
+      }
+
+      if(canSend){
           const response = await this.getGPTMessage(text, talker.id);
           await this.trySay(talker, response);
       }

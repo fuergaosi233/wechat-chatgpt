@@ -2,3 +2,4 @@ chatGPTAccountPool:
   - email: email
     password: password
     session_token: session_token
+    trigger_keywords: trigger_keywords

@@ -53,7 +53,9 @@ Your config.yaml should be like this:
 chatGPTAccountPool:
   - email: <your email>
     password: <your password>
+    trigger_keywords: <empty or you trigger keywords>
 ```
+⚠️ Trigger keywords must appear in the first position of the received message.
 ⚠️ Pls make sure your network can log in to OpenAI, and if you fail to login in try setting up a proxy or using SessionToken.  
 **Setup proxy:**
 ```sh
