@@ -5,6 +5,7 @@ import { execa } from "execa";
 import { Cache } from "./cache.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
 
+const SINGLE_MESSAGE_MAX_SIZE = 500;
 export class ChatGPTBot {
   // Record talkid with conversation id
   conversations = new Map<string, ChatGPTConversation>();
@@ -115,9 +116,9 @@ export class ChatGPTBot {
   ): Promise<void> {
     const messages: Array<string> = [];
     let message = mesasge;
-    while (message.length > 300) {
-      messages.push(message.slice(0, 300));
-      message = message.slice(300);
+    while (message.length > SINGLE_MESSAGE_MAX_SIZE) {
+      messages.push(message.slice(0, SINGLE_MESSAGE_MAX_SIZE));
+      message = message.slice(SINGLE_MESSAGE_MAX_SIZE);
     }
     messages.push(message);
     for (const msg of messages) {
