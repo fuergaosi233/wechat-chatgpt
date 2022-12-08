@@ -88,10 +88,12 @@ export class ChatGPTPoole {
     }
     const chatGPT = this.chatGPTAPI;
     const conversation = chatGPT.chatGpt.getConversation();
-    return {
+    const conversationItem = {
       conversation,
       account: chatGPT.account,
     };
+    this.conversationsPool.set(talkid, conversationItem);
+    return conversationItem;
   }
   // send message with talkid
   async sendMessage(message: string, talkid: string) {
@@ -103,7 +105,7 @@ export class ChatGPTPoole {
       return response;
     } catch (err: any) {
       console.error(
-        `err is ${err.message}, account ${JSON.stringify(err.account)}`
+        `err is ${err.message}, account ${JSON.stringify(account)}`
       );
       // If send message failed, we will remove the conversation from pool
       this.conversationsPool.delete(talkid);
