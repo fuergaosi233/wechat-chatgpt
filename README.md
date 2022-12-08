@@ -88,7 +88,7 @@ If you are logging in for the first time, then you need to scan the qrcode.
 👤 **holegots**
 
 * Twitter: [@fuergaosi](https://twitter.com/fuergaosi)
-* Github: [@fuergaosi233](https://github.com/fuergaosi233)
+* GitHub: [@fuergaosi233](https://github.com/fuergaosi233)
 
 ## 🤝 Contributing
 
