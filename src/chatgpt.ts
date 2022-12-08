@@ -20,7 +20,8 @@ export class ChatGPTBot {
       return this.cache.get(email);
     }
     const cmd = `poetry run python3 src/generate_session.py ${email} ${password}`;
-    const { stdout, stderr, exitCode } = await execa(`sh`, ["-c", cmd]);
+    const platform = process.platform;
+    const { stdout, stderr, exitCode } = await execa(platform==="win32"?"powershell":"sh", [platform==="win32"?"/c":"-c", cmd]);
     if (exitCode !== 0) {
       console.error(stderr);
       return "";
@@ -102,7 +103,7 @@ export class ChatGPTBot {
   async getGPTMessage(text: string, talkerId: string): Promise<string> {
     const conversation = this.getConversation(talkerId);
     try {
-      return await conversation.sendMessage(text);
+      return await conversation.sendMessage(text,{timeoutMs: 2 * 60 * 1000});
     } catch (e) {
       this.resetConversation(talkerId);
       console.error(e);
@@ -127,7 +128,15 @@ export class ChatGPTBot {
   }
   async onMessage(message: Message) {
     const talker = message.talker();
-    if (talker.self() || message.type() > 10 || talker.name() == "微信团队") {
+    if (talker.self()
+      || message.type() > 10
+      || talker.name() == "微信团队"
+      // 语音(视频)消息
+      || message.text().includes("收到一条视频/语音聊天消息，请在手机上查看")
+      // 红包消息
+      || message.text().includes("收到红包，请在手机上查看")
+      // 位置消息
+      || message.text().includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg")) {
       return;
     }
     const text = message.text();
