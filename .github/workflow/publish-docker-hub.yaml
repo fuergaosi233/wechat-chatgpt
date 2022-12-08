@@ -1,6 +1,10 @@
 name: Publish Docker image
 
 on:
+  # Test on every push
+  push:
+    branches:
+      - ci/add-github-action
   release:
     types: [published]
 
