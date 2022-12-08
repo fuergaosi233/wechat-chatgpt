@@ -70,7 +70,7 @@ export class ChatGPTBot {
       });
     console.log(`Chatgpt pool size: ${chatGPTPools.length}`);
     this.chatGPTPools = chatGPTPools;
-    config.botConfig.forEach((item: { [key: string]: string; }) => {
+    config.botConfig?.forEach((item: { [key: string]: string; }) => {
         Object.assign(this.botConfig, item)
     });
   }
