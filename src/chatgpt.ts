@@ -11,7 +11,7 @@ export class ChatGPTBot {
   // Record talkid with conversation id
   conversations = new Map<string, ChatGPTConversation>();
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
-  botConfig: { [key: string]: string } = {
+  botConfig: Record<string,string> = {
       trigger_keywords:""
   };
 
@@ -70,7 +70,9 @@ export class ChatGPTBot {
     console.log(`Chatgpt pool size: ${chatGPTPools.length}`);
     this.chatGPTPools = chatGPTPools;
     config.botConfig.forEach((item: { [key: string]: string; }) => {
-        this.botConfig = { ...this.botConfig, ...item };
+        Object.keys(item).forEach((configItemKey: string ) =>{
+            this.botConfig[configItemKey] = item[configItemKey]
+        })
     });
   }
   get chatgpt(): ChatGPTAPI {
