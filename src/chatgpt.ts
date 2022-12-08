@@ -1,32 +1,41 @@
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { Message } from "wechaty";
+import { MessageType } from "wechaty-puppet/src/schemas/message";
 import { config } from "./config.js";
 import { execa } from "execa";
 import { Cache } from "./cache.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
-import {string} from "yaml/dist/schema/common/string";
-
+import {
+  IChatGPTItem,
+  IConversationItem,
+  AccountWithUserInfo,
+  isAccountWithUserInfo,
+  isAccountWithSessionToken,
+} from "./interface.js";
 const SINGLE_MESSAGE_MAX_SIZE = 500;
-export class ChatGPTBot {
-  // Record talkid with conversation id
-  conversations = new Map<string, ChatGPTConversation>();
-  chatGPTPools: Array<ChatGPTAPI> | [] = [];
-  botConfig: Record<string,string> = {
-      trigger_keywords:""
-  };
-
+const ErrorCode2Message: Record<string, string> = {
+  "503":
+    "OpenAI 服务器繁忙，请稍后再试| The OpenAI server is busy, please try again later",
+  "429":
+    "OpenAI 服务器限流，请稍后再试| The OpenAI server was limted, please try again later",
+  "500":
+    "OpenAI 服务器繁忙，请稍后再试| The OpenAI server is busy, please try again later",
+  unknown: "未知错误，请看日志 | Error unknown, please see the log",
+};
+export class ChatGPTPoole {
+  chatGPTPools: Array<IChatGPTItem> | [] = [];
+  conversationsPool: Map<string, IConversationItem> = new Map();
   cache = new Cache("cache.json");
-  botName: string = "";
-  setBotName(botName: string) {
-    this.botName = botName;
-  }
   async getSessionToken(email: string, password: string): Promise<string> {
     if (this.cache.get(email)) {
       return this.cache.get(email);
     }
     const cmd = `poetry run python3 src/generate_session.py ${email} ${password}`;
     const platform = process.platform;
-    const { stdout, stderr, exitCode } = await execa(platform==="win32"?"powershell":"sh", [platform==="win32"?"/c":"-c", cmd]);
+    const { stdout, stderr, exitCode } = await execa(
+      platform === "win32" ? "powershell" : "sh",
+      [platform === "win32" ? "/c" : "-c", cmd]
+    );
     if (exitCode !== 0) {
       console.error(stderr);
       return "";
@@ -39,84 +48,118 @@ export class ChatGPTBot {
     }
     return "";
   }
-  async startGPTBot() {
-    const chatGPTPools = (
-      await Promise.all(
-        config.chatGPTAccountPool.map(
-          async (account: {
-            email?: string;
-            password?: string;
-            session_token?: string;
-          }): Promise<string> => {
-            if (account.session_token) {
-              return account.session_token;
-            } else if (account.email && account.password) {
-              return await this.getSessionToken(
-                account.email,
-                account.password
-              );
-            } else {
-              return "";
-            }
-          }
-        )
-      )
-    )
-      .filter((token: string) => token !== "")
-      .map((token: string) => {
-        return new ChatGPTAPI({
-          sessionToken: token,
-        });
-      });
-    console.log(`Chatgpt pool size: ${chatGPTPools.length}`);
-    this.chatGPTPools = chatGPTPools;
-    config.botConfig?.forEach((item: { [key: string]: string; }) => {
-        Object.assign(this.botConfig, item)
+  async startPools() {
+    const sessionAccounts = config.chatGPTAccountPool.filter(
+      isAccountWithSessionToken
+    );
+    const userAccounts = await Promise.all(
+      config.chatGPTAccountPool
+        .filter(isAccountWithUserInfo)
+        .map(async (account: AccountWithUserInfo) => {
+          const session_token = await this.getSessionToken(
+            account.email,
+            account.password
+          );
+          return {
+            ...account,
+            session_token,
+          };
+        })
+    );
+    this.chatGPTPools = [...sessionAccounts, ...userAccounts].map((account) => {
+      return {
+        chatGpt: new ChatGPTAPI({
+          sessionToken: account.session_token,
+        }),
+        account,
+      };
     });
+    console.log(`ChatGPTPools: ${this.chatGPTPools.length}`);
   }
-  get chatgpt(): ChatGPTAPI {
-    if (this.chatGPTPools.length === 0) {
-      throw new Error("No chatgpt session token");
-    } else if (this.chatGPTPools.length === 1) {
-      return this.chatGPTPools[0];
+  // Randome get chatgpt item form pool
+  get chatGPTAPI(): IChatGPTItem {
+    return this.chatGPTPools[
+      Math.floor(Math.random() * this.chatGPTPools.length)
+    ];
+  }
+  // Randome get conversation item form pool
+  getConversation(talkid: string): IConversationItem {
+    if (this.conversationsPool.has(talkid)) {
+      return this.conversationsPool.get(talkid) as IConversationItem;
     }
-    const index = Math.floor(Math.random() * this.chatGPTPools.length);
-    return this.chatGPTPools[index];
+    const chatGPT = this.chatGPTAPI;
+    const conversation = chatGPT.chatGpt.getConversation();
+    const conversationItem = {
+      conversation,
+      account: chatGPT.account,
+    };
+    this.conversationsPool.set(talkid, conversationItem);
+    return conversationItem;
   }
-  resetConversation(talkerId: string): void {
-    const chatgpt = this.chatgpt;
-    this.conversations.set(talkerId, chatgpt.getConversation());
-  }
-  getConversation(talkerId: string): ChatGPTConversation {
-    const chatgpt = this.chatgpt;
-    if (this.conversations.get(talkerId) !== undefined) {
-      return this.conversations.get(talkerId) as ChatGPTConversation;
+  // send message with talkid
+  async sendMessage(message: string, talkid: string) {
+    const conversationItem = this.getConversation(talkid);
+    const { conversation, account } = conversationItem;
+    try {
+      // TODO: Add Retry logic
+      const response = await conversation.sendMessage(message);
+      return response;
+    } catch (err: any) {
+      console.error(
+        `err is ${err.message}, account ${JSON.stringify(account)}`
+      );
+      // If send message failed, we will remove the conversation from pool
+      this.conversationsPool.delete(talkid);
+      // Retry
+      return this.error2msg(err);
     }
-    const conversation = chatgpt.getConversation();
-    this.conversations.set(talkerId, conversation);
-    return conversation;
+  }
+  // Make error code to more human readable message.
+  error2msg(err: Error): string {
+    for (const code in Object.keys(ErrorCode2Message)) {
+      if (err.message.includes(code)) {
+        return ErrorCode2Message[code];
+      }
+    }
+    return ErrorCode2Message.unknown;
+  }
+}
+export class ChatGPTBot {
+  // Record talkid with conversation id
+  conversations = new Map<string, ChatGPTConversation>();
+  chatGPTPool = new ChatGPTPoole();
+  cache = new Cache("cache.json");
+  chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
+  botName: string = "";
+  setBotName(botName: string) {
+    this.botName = botName;
+  }
+  get chatGroupTiggerKeyword(): string {
+    return `@${this.botName}`;
+  }
+  async startGPTBot() {
+    console.debug(`Start GPT Bot Config is:${config}`);
+    await this.chatGPTPool.startPools();
+    console.debug(`🤖️ Start GPT Bot Success, ready to handle message!`);
   }
   // TODO: Add reset conversation id and ping pong
   async command(): Promise<void> {}
   // remove more times conversation and mention
-  cleanMessage(text: string): string {
-    let realText = text;
-    const item = text.split("- - - - - - - - - - - - - - -");
+  cleanMessage(rawText: string, privateChat: boolean = false): string {
+    let text = rawText;
+    const item = rawText.split("- - - - - - - - - - - - - - -");
     if (item.length > 1) {
-      realText = item[item.length - 1];
+      text = item[item.length - 1];
     }
+    text = text.replace(
+      privateChat ? this.chatPrivateTiggerKeyword : this.chatGroupTiggerKeyword,
+      ""
+    );
     // remove more text via - - - - - - - - - - - - - - -
-    return realText;
+    return text;
   }
   async getGPTMessage(text: string, talkerId: string): Promise<string> {
-    const conversation = this.getConversation(talkerId);
-    try {
-      return await conversation.sendMessage(text,{timeoutMs: 2 * 60 * 1000});
-    } catch (e) {
-      this.resetConversation(talkerId);
-      console.error(e);
-      return String(e);
-    }
+    return await this.chatGPTPool.sendMessage(text, talkerId);
   }
   // The message is segmented according to its size
   async trySay(
@@ -134,56 +177,75 @@ export class ChatGPTBot {
       await talker.say(msg);
     }
   }
+  // Check whether the ChatGPT processing can be triggered
+  tiggerGPTMessage(text: string, privateChat: boolean = false): boolean {
+    const chatPrivateTiggerKeyword = this.chatPrivateTiggerKeyword;
+    let triggered = false;
+    if (privateChat) {
+      triggered = chatPrivateTiggerKeyword
+        ? text.includes(chatPrivateTiggerKeyword)
+        : true;
+    } else {
+      triggered = text.includes(this.chatGroupTiggerKeyword);
+    }
+    if (triggered) {
+      console.log(`🎯 Triggered ChatGPT: ${text}`);
+    }
+    return triggered;
+  }
+  // Filter out the message that does not need to be processed
+  isNonsense(
+    talker: ContactInterface,
+    messageType: MessageType,
+    text: string
+  ): boolean {
+    return (
+      talker.self() ||
+      messageType > 10 ||
+      talker.name() == "微信团队" ||
+      // 语音(视频)消息
+      text.includes("收到一条视频/语音聊天消息，请在手机上查看") ||
+      // 红包消息
+      text.includes("收到红包，请在手机上查看") ||
+      // 位置消息
+      text.includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg")
+    );
+  }
+
+  async onPrivateMessage(talker: ContactInterface, text: string) {
+    const talkerId = talker.id;
+    const gptMessage = await this.getGPTMessage(text, talkerId);
+    await this.trySay(talker, gptMessage);
+  }
+
+  async onGroupMessage(
+    talker: ContactInterface,
+    text: string,
+    room: RoomInterface
+  ) {
+    const talkerId = talker.id;
+    const gptMessage = await this.getGPTMessage(text, talkerId);
+    const result = `${text}\n ------\n ${gptMessage}`;
+    await this.trySay(room, result);
+  }
   async onMessage(message: Message) {
     const talker = message.talker();
-    if (talker.self()
-      || message.type() > 10
-      || talker.name() == "微信团队"
-      // 语音(视频)消息
-      || message.text().includes("收到一条视频/语音聊天消息，请在手机上查看")
-      // 红包消息
-      || message.text().includes("收到红包，请在手机上查看")
-      // 位置消息
-      || message.text().includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg")) {
-      return;
-    }
-    const text = message.text();
+    const rawText = message.text();
     const room = message.room();
-    if (!room) {
-      let canSend = false;
-      let trigger_keywords = this.botConfig.trigger_keywords
-      if(trigger_keywords){
-          if(text.indexOf(trigger_keywords) == 0){
-              //only if the keywords appear in the first position will they trigger a response
-              console.log(`🎯 Hit GPT Enabled User by Trigger keywords:${trigger_keywords} , User:${talker.name()}`);
-              canSend = true
-          }
-      }else{
-          console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
-          canSend = true
-      }
-
-      if(canSend){
-          const response = await this.getGPTMessage(text, talker.id);
-          await this.trySay(talker, response);
-      }
+    const messageType = message.type();
+    const privateChat = !room;
+    if (this.isNonsense(talker, messageType, rawText)) {
       return;
     }
-    let realText = this.cleanMessage(text);
-    // The bot should reply mention message
-    if (!realText.includes(`@${this.botName}`)) {
+    if (this.tiggerGPTMessage(rawText, privateChat)) {
+      const text = this.cleanMessage(rawText, privateChat);
+      if (privateChat) {
+        return await this.onPrivateMessage(talker, text);
+      } else {
+        return await this.onGroupMessage(talker, text, room);
+      }
+    } else {
       return;
     }
-    realText = text.replace(`@${this.botName}`, "");
-    const topic = await room.topic();
-    console.debug(
-      `receive message: ${realText} from ${talker.name()} in ${topic}, room: ${
-        room.id
-      }`
-    );
-    console.log(`Hit GPT Enabled Group: ${topic} in room: ${room.id}`);
-    const response = await this.getGPTMessage(realText, talker.id);
-    const result = `${realText}\n ------\n ${response}`;
-    await this.trySay(room, result);
   }
 }
