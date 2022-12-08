@@ -20,17 +20,17 @@
 - [X] Simulated at message receive
 - [X] Add conversation Support (Everyone will have their own session)
 - [X] Add Dockerfile
-- [ ] Publish to Docker.hub
-- [ ] Add Railray deploy
+- [X] Publish to Docker.hub
+- [ ] Add Raiway deploy
 - [ ] Auto Reload OpenAI Accounts Pool
+- [ ] Add sendmessage retry for 429/503
 
-## Use with docker
+## Use with docker (recommended)
 
 ```sh
 cp config.yaml.example config.yaml
 # Change Config.yaml
-docker build -t wechat-chatgpt .
-docker run -v $(pwd)/config.yaml:/app/config.yaml wechat-chatgpt
+docker run -v -it $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 ```
 ## Install
 
