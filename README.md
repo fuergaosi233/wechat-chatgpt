@@ -30,8 +30,11 @@
 ```sh
 cp config.yaml.example config.yaml
 # Change Config.yaml
-docker run -v -it $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml wechat-chatgpt:latest
+# login with qrcode
+docker logs -f wechat-chatgpt
 ```
+
 ## Install
 
 ```sh
