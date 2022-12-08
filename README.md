@@ -30,7 +30,7 @@
 ```sh
 cp config.yaml.example config.yaml
 # Change Config.yaml
-docker run -v -it $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+docker run -it -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 ```
 ## Install
 
