@@ -1,10 +1,6 @@
 name: Publish Docker image
 
 on:
-  # Test on every push
-  push:
-    branches:
-      - ci/add-github-action
   release:
     types: [published]
 
@@ -34,4 +30,5 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          platforms: linux/amd64,linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
