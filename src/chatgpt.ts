@@ -4,12 +4,17 @@ import { config } from "./config.js";
 import { execa } from "execa";
 import { Cache } from "./cache.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
+import {string} from "yaml/dist/schema/common/string";
 
 const SINGLE_MESSAGE_MAX_SIZE = 500;
 export class ChatGPTBot {
   // Record talkid with conversation id
   conversations = new Map<string, ChatGPTConversation>();
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
+  botConfig: Record<string,string> = {
+      trigger_keywords:""
+  };
+
   cache = new Cache("cache.json");
   botName: string = "";
   setBotName(botName: string) {
@@ -65,6 +70,9 @@ export class ChatGPTBot {
       });
     console.log(`Chatgpt pool size: ${chatGPTPools.length}`);
     this.chatGPTPools = chatGPTPools;
+    config.botConfig.forEach((item: { [key: string]: string; }) => {
+        Object.assign(this.botConfig, item)
+    });
   }
   get chatgpt(): ChatGPTAPI {
     if (this.chatGPTPools.length === 0) {
@@ -142,9 +150,23 @@ export class ChatGPTBot {
     const text = message.text();
     const room = message.room();
     if (!room) {
-      console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
-      const response = await this.getGPTMessage(text, talker.id);
-      await this.trySay(talker, response);
+      let canSend = false;
+      let trigger_keywords = this.botConfig.trigger_keywords
+      if(trigger_keywords){
+          if(text.indexOf(trigger_keywords) == 0){
+              //only if the keywords appear in the first position will they trigger a response
+              console.log(`🎯 Hit GPT Enabled User by Trigger keywords:${trigger_keywords} , User:${talker.name()}`);
+              canSend = true
+          }
+      }else{
+          console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
+          canSend = true
+      }
+
+      if(canSend){
+          const response = await this.getGPTMessage(text, talker.id);
+          await this.trySay(talker, response);
+      }
       return;
     }
     let realText = this.cleanMessage(text);
