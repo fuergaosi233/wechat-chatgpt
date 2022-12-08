@@ -4,15 +4,19 @@ import { config } from "./config.js";
 import { execa } from "execa";
 import { Cache } from "./cache.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
+import {string} from "yaml/dist/schema/common/string";
 
 const SINGLE_MESSAGE_MAX_SIZE = 500;
 export class ChatGPTBot {
   // Record talkid with conversation id
   conversations = new Map<string, ChatGPTConversation>();
   chatGPTPools: Array<ChatGPTAPI> | [] = [];
+  botConfig: { [key: string]: string } = {
+      trigger_keywords:""
+  };
+
   cache = new Cache("cache.json");
   botName: string = "";
-  triggerKeywords: string = ""
   setBotName(botName: string) {
     this.botName = botName;
   }
@@ -42,11 +46,7 @@ export class ChatGPTBot {
             email?: string;
             password?: string;
             session_token?: string;
-            trigger_keywords?:string;
           }): Promise<string> => {
-            if(account.trigger_keywords){
-                this.triggerKeywords = account.trigger_keywords
-            }
             if (account.session_token) {
               return account.session_token;
             } else if (account.email && account.password) {
@@ -69,6 +69,9 @@ export class ChatGPTBot {
       });
     console.log(`Chatgpt pool size: ${chatGPTPools.length}`);
     this.chatGPTPools = chatGPTPools;
+    config.botConfig.forEach((item: { [key: string]: string; }) => {
+        this.botConfig = { ...this.botConfig, ...item };
+    });
   }
   get chatgpt(): ChatGPTAPI {
     if (this.chatGPTPools.length === 0) {
@@ -139,9 +142,11 @@ export class ChatGPTBot {
     const room = message.room();
     if (!room) {
       let canSend = false;
-      if(this.triggerKeywords){
-          if(text.indexOf(this.triggerKeywords) == 0){
-              console.log(`🎯 Hit GPT Enabled User by Trigger keywords:${this.triggerKeywords} , User:${talker.name()}`);
+      let trigger_keywords = this.botConfig.trigger_keywords
+      if(trigger_keywords){
+          if(text.indexOf(trigger_keywords) == 0){
+              //only if the keywords appear in the first position will they trigger a response
+              console.log(`🎯 Hit GPT Enabled User by Trigger keywords:${trigger_keywords} , User:${talker.name()}`);
               canSend = true
           }
       }else{
@@ -169,7 +174,7 @@ export class ChatGPTBot {
     );
     console.log(`Hit GPT Enabled Group: ${topic} in room: ${room.id}`);
     const response = await this.getGPTMessage(realText, talker.id);
-    const result = `${realText}\n ------\n@${talker.name()} ${response}`;
+    const result = `${realText}\n ------\n ${response}`;
     await this.trySay(room, result);
   }
 }
