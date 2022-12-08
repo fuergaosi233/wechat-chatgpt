@@ -133,8 +133,10 @@ export class ChatGPTBot {
     const room = message.room();
     if (!room) {
       console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
-      const response = await this.getGPTMessage(text, talker.id);
-      await this.trySay(talker, response);
+      if(text.indexOf("提问") == 0){
+          const response = await this.getGPTMessage(text, talker.id);
+          await this.trySay(talker, response);
+      }
       return;
     }
     let realText = this.cleanMessage(text);
@@ -151,7 +153,7 @@ export class ChatGPTBot {
     );
     console.log(`Hit GPT Enabled Group: ${topic} in room: ${room.id}`);
     const response = await this.getGPTMessage(realText, talker.id);
-    const result = `${realText}\n ------\n ${response}`;
+    const result = `${realText}\n ------\n@${talker.name()} ${response}`;
     await this.trySay(room, result);
   }
 }
