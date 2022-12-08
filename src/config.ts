@@ -11,4 +11,14 @@ export const config: IConfig = {
     configFile.chatGptRetryTimes ||
     Number(process.env.CHAT_GPT_RETRY_TIMES) ||
     3,
+
+  chatPrivateTiggerKeyword:
+    configFile.chatPrivateTiggerKeyword ||
+    // Try compatible with previous designs
+    (configFile?.botConfig as Array<Map<string, string>>).reduce(
+      (prev: string, curr: Map<string, string>) =>
+        curr.get("trigger_keywords") || "",
+      ""
+    ) ||
+    "",
 };

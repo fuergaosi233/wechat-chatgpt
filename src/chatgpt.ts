@@ -1,5 +1,6 @@
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { Message } from "wechaty";
+import { MessageType } from "wechaty-puppet/src/schemas/message";
 import { config } from "./config.js";
 import { execa } from "execa";
 import { Cache } from "./cache.js";
@@ -128,25 +129,34 @@ export class ChatGPTBot {
   conversations = new Map<string, ChatGPTConversation>();
   chatGPTPool = new ChatGPTPoole();
   cache = new Cache("cache.json");
-  trigger_keywords = "";
+  chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
   botName: string = "";
   setBotName(botName: string) {
     this.botName = botName;
   }
+  get chatGroupTiggerKeyword(): string {
+    return `@${this.botName}`;
+  }
   async startGPTBot() {
+    console.debug(`Start GPT Bot Config is:${config}`);
     await this.chatGPTPool.startPools();
+    console.debug(`🤖️ Start GPT Bot Success, ready to handle message!`);
   }
   // TODO: Add reset conversation id and ping pong
   async command(): Promise<void> {}
   // remove more times conversation and mention
-  cleanMessage(text: string): string {
-    let realText = text;
-    const item = text.split("- - - - - - - - - - - - - - -");
+  cleanMessage(rawText: string, privateChat: boolean = false): string {
+    let text = rawText;
+    const item = rawText.split("- - - - - - - - - - - - - - -");
     if (item.length > 1) {
-      realText = item[item.length - 1];
+      text = item[item.length - 1];
     }
+    text = text.replace(
+      privateChat ? this.chatPrivateTiggerKeyword : this.chatGroupTiggerKeyword,
+      ""
+    );
     // remove more text via - - - - - - - - - - - - - - -
-    return realText;
+    return text;
   }
   async getGPTMessage(text: string, talkerId: string): Promise<string> {
     return await this.chatGPTPool.sendMessage(text, talkerId);
@@ -167,60 +177,75 @@ export class ChatGPTBot {
       await talker.say(msg);
     }
   }
-  async onMessage(message: Message) {
-    const talker = message.talker();
-    if (
+  // Check whether the ChatGPT processing can be triggered
+  tiggerGPTMessage(text: string, privateChat: boolean = false): boolean {
+    const chatPrivateTiggerKeyword = this.chatPrivateTiggerKeyword;
+    let triggered = false;
+    if (privateChat) {
+      triggered = chatPrivateTiggerKeyword
+        ? text.includes(chatPrivateTiggerKeyword)
+        : true;
+    } else {
+      triggered = text.includes(this.chatGroupTiggerKeyword);
+    }
+    if (triggered) {
+      console.log(`🎯 Triggered ChatGPT: ${text}`);
+    }
+    return triggered;
+  }
+  // Filter out the message that does not need to be processed
+  isNonsense(
+    talker: ContactInterface,
+    messageType: MessageType,
+    text: string
+  ): boolean {
+    return (
       talker.self() ||
-      message.type() > 10 ||
+      messageType > 10 ||
       talker.name() == "微信团队" ||
       // 语音(视频)消息
-      message.text().includes("收到一条视频/语音聊天消息，请在手机上查看") ||
+      text.includes("收到一条视频/语音聊天消息，请在手机上查看") ||
       // 红包消息
-      message.text().includes("收到红包，请在手机上查看") ||
+      text.includes("收到红包，请在手机上查看") ||
       // 位置消息
-      message.text().includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg")
-    ) {
-      return;
-    }
-    const text = message.text();
-    const room = message.room();
-    if (!room) {
-      let canSend = false;
-      let trigger_keywords = this.trigger_keywords;
-      if (trigger_keywords) {
-        if (text.indexOf(trigger_keywords) == 0) {
-          //only if the keywords appear in the first position will they trigger a response
-          console.log(
-            `🎯 Hit GPT Enabled User by Trigger keywords:${trigger_keywords} , User:${talker.name()}`
-          );
-          canSend = true;
-        }
-      } else {
-        console.log(`🎯 Hit GPT Enabled User: ${talker.name()}`);
-        canSend = true;
-      }
-
-      if (canSend) {
-        const response = await this.getGPTMessage(text, talker.id);
-        await this.trySay(talker, response);
-      }
-      return;
-    }
-    let realText = this.cleanMessage(text);
-    // The bot should reply mention message
-    if (!realText.includes(`@${this.botName}`)) {
-      return;
-    }
-    realText = text.replace(`@${this.botName}`, "");
-    const topic = await room.topic();
-    console.debug(
-      `receive message: ${realText} from ${talker.name()} in ${topic}, room: ${
-        room.id
-      }`
+      text.includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg")
     );
-    console.log(`Hit GPT Enabled Group: ${topic} in room: ${room.id}`);
-    const response = await this.getGPTMessage(realText, talker.id);
-    const result = `${realText}\n ------\n ${response}`;
+  }
+
+  async onPrivateMessage(talker: ContactInterface, text: string) {
+    const talkerId = talker.id;
+    const gptMessage = await this.getGPTMessage(text, talkerId);
+    await this.trySay(talker, gptMessage);
+  }
+
+  async onGroupMessage(
+    talker: ContactInterface,
+    text: string,
+    room: RoomInterface
+  ) {
+    const talkerId = talker.id;
+    const gptMessage = await this.getGPTMessage(text, talkerId);
+    const result = `${text}\n ------\n ${gptMessage}`;
     await this.trySay(room, result);
+  }
+  async onMessage(message: Message) {
+    const talker = message.talker();
+    const rawText = message.text();
+    const room = message.room();
+    const messageType = message.type();
+    const privateChat = !room;
+    if (this.isNonsense(talker, messageType, rawText)) {
+      return;
+    }
+    if (this.tiggerGPTMessage(rawText, privateChat)) {
+      const text = this.cleanMessage(rawText, privateChat);
+      if (privateChat) {
+        return await this.onPrivateMessage(talker, text);
+      } else {
+        return await this.onGroupMessage(talker, text, room);
+      }
+    } else {
+      return;
+    }
   }
 }
