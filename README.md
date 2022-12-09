@@ -10,7 +10,7 @@
 </p>
 
 > Use ChatGPT On Wechat via wechaty
-English | [中文文档](README.zh-CN.md)
+English | [中文文档](README_ZH.md)
 ### 🏠 [Homepage](https://github.com/fuergaosi233/wechat-chatgpt)
 
 ## 🌟 Feature
