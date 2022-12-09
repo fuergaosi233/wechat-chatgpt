@@ -11,7 +11,7 @@
 
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！
 
-### 🏠 [主页](https://github.com/fuergaosi233/wechat-chatgpt)
+### 🏠 [主页](https://github.com/fuergaosi233/wechat-chatgpt/blob/main/README_ZH.md)
 
 ## 🌟 功能点
 
