@@ -88,7 +88,7 @@ export class ChatGPTPoole {
           ): item is IChatGPTItem & {
             account: AccountWithUserInfo;
             chatGpt: ChatGPTAPI;
-          } => item?.email === account.email
+          } => item.account.email === account.email
         );
       if (chatGPTItem) {
         await this.cache.delete(account.email);
