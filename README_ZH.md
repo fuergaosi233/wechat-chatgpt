@@ -25,16 +25,27 @@
 - [x] 实现 OpenAI 账户池的热加载
 - [ ] 当 OpenAI 返回码为 429/503 时自动重试
 
-## 通过 Docker 使用（✅ 推荐）
+## 在Linux上通过Docker使用（✅ 推荐）
 
 ```sh
 cp config.yaml.example config.yaml
 # Change Config.yaml
+# 在Linux或WindowsPowerShell上运行如下命令
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # 使用二维码登陆
 docker logs -f wechat-chatgpt
 ```
 
+## 在Windows上通过Docker使用
+```sh
+# 在当前目录创建并修改config.yaml
+# 在WindowsPowerShell中运行如下命令
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+# 在Windows command line (cmd)中, 您需要像这样修改上述代码的挂载目录:
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+# 通过二维码登录
+docker logs -f wechat-chatgpt
+```
 ## 安装
 
 ```sh
