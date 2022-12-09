@@ -9,10 +9,10 @@
   </a>
 </p>
 
-> Use ChatGPT On Wechat via wechaty
+> Use ChatGPT On Wechat via wechaty  
 English | [中文文档](README_ZH.md)
-### 🏠 [Homepage](https://github.com/fuergaosi233/wechat-chatgpt)
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
 ## 🌟 Feature
 
 - [x] Use ChatGPT On Wechat via wechaty
@@ -21,7 +21,7 @@ English | [中文文档](README_ZH.md)
 - [x] Add conversation Support (Everyone will have their own session)
 - [x] Add Dockerfile
 - [x] Publish to Docker.hub
-- [ ] Add Railway deploy
+- [x] Add Railway deploy
 - [x] Auto Reload OpenAI Accounts Pool
 - [ ] Add sendmessage retry for 429/503
 
