@@ -46,6 +46,13 @@ docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegot
 # 通过二维码登录
 docker logs -f wechat-chatgpt
 ```
+## 更新Docker镜像版本
+```sh
+docker pull holegots/wechat-chatgpt:latest
+docker stop wechat-chatgpt
+docker rm wechat-chatgpt
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+```
 ## 安装
 
 ```sh
