@@ -30,7 +30,10 @@
 ```sh
 cp config.yaml.example config.yaml
 # Change Config.yaml
+# 在Linux或WindowsPowerShell上运行如下命令
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+# 在Windows command line (cmd)中, 你需要像这样修改上述代码的挂载目录:
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # 使用二维码登陆
 docker logs -f wechat-chatgpt
 ```
