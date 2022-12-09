@@ -15,22 +15,22 @@ import {
 enum MessageType {
   Unknown = 0,
 
-  Attachment = 1,    // Attach(6),
-  Audio = 2,    // Audio(1), Voice(34)
-  Contact = 3,    // ShareCard(42)
-  ChatHistory = 4,    // ChatHistory(19)
-  Emoticon = 5,    // Sticker: Emoticon(15), Emoticon(47)
-  Image = 6,    // Img(2), Image(3)
-  Text = 7,    // Text(1)
-  Location = 8,    // Location(48)
-  MiniProgram = 9,    // MiniProgram(33)
-  GroupNote = 10,   // GroupNote(53)
-  Transfer = 11,   // Transfers(2000)
-  RedEnvelope = 12,   // RedEnvelopes(2001)
-  Recalled = 13,   // Recalled(10002)
-  Url = 14,   // Url(5)
-  Video = 15,   // Video(4), Video(43)
-  Post = 16,   // Moment, Channel, Tweet, etc
+  Attachment = 1, // Attach(6),
+  Audio = 2, // Audio(1), Voice(34)
+  Contact = 3, // ShareCard(42)
+  ChatHistory = 4, // ChatHistory(19)
+  Emoticon = 5, // Sticker: Emoticon(15), Emoticon(47)
+  Image = 6, // Img(2), Image(3)
+  Text = 7, // Text(1)
+  Location = 8, // Location(48)
+  MiniProgram = 9, // MiniProgram(33)
+  GroupNote = 10, // GroupNote(53)
+  Transfer = 11, // Transfers(2000)
+  RedEnvelope = 12, // RedEnvelopes(2001)
+  Recalled = 13, // Recalled(10002)
+  Url = 14, // Url(5)
+  Video = 15, // Video(4), Video(43)
+  Post = 16, // Moment, Channel, Tweet, etc
 }
 
 const SINGLE_MESSAGE_MAX_SIZE = 500;
@@ -53,12 +53,13 @@ export class ChatGPTPoole {
     }
     const cmd = `poetry run python3 src/generate_session.py ${email} ${password}`;
     const platform = process.platform;
+
     const { stdout, stderr, exitCode } = await execa(
       platform === "win32" ? "powershell" : "sh",
       [platform === "win32" ? "/c" : "-c", cmd]
     );
     if (exitCode !== 0) {
-      console.error(stderr);
+      console.error(`${email} login failed: ${stderr}`);
       return "";
     }
     // The last line in stdout is the session token
@@ -95,6 +96,9 @@ export class ChatGPTPoole {
         account,
       };
     });
+    if (this.chatGPTPools.length === 0) {
+      throw new Error("⚠️ No chatgpt account in pool");
+    }
     console.log(`ChatGPTPools: ${this.chatGPTPools.length}`);
   }
   // Randome get chatgpt item form pool
@@ -109,6 +113,9 @@ export class ChatGPTPoole {
       return this.conversationsPool.get(talkid) as IConversationItem;
     }
     const chatGPT = this.chatGPTAPI;
+    if (!chatGPT) {
+      throw new Error("⚠️ No chatgpt item in pool");
+    }
     const conversation = chatGPT.chatGpt.getConversation();
     const conversationItem = {
       conversation,
