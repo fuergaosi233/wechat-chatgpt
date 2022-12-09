@@ -45,7 +45,13 @@ docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegot
 # login with qrcode
 docker logs -f wechat-chatgpt
 ```
-
+## Upgrade Docker Image Version
+```sh
+docker pull holegots/wechat-chatgpt:latest
+docker stop wechat-chatgpt
+docker rm wechat-chatgpt
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+```
 ## Install
 
 ```sh
