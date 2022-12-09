@@ -10,7 +10,7 @@
 </p>
 
 > Use ChatGPT On Wechat via wechaty
-
+English | [中文文档](README.zh-CN.md)
 ### 🏠 [Homepage](https://github.com/fuergaosi233/wechat-chatgpt)
 
 ## 🌟 Feature
@@ -22,7 +22,7 @@
 - [x] Add Dockerfile
 - [x] Publish to Docker.hub
 - [ ] Add Railway deploy
-- [ ] Auto Reload OpenAI Accounts Pool
+- [x] Auto Reload OpenAI Accounts Pool
 - [ ] Add sendmessage retry for 429/503
 
 ## Use with docker (recommended)
