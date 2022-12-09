@@ -116,7 +116,7 @@ export class ChatGPTPoole {
   }
   // Make error code to more human readable message.
   error2msg(err: Error): string {
-    for (const code in Object.keys(ErrorCode2Message)) {
+    for (const code in ErrorCode2Message) {
       if (err.message.includes(code)) {
         return ErrorCode2Message[code];
       }
