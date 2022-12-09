@@ -12,8 +12,12 @@ export class Cache {
   get(key: string) {
     return this._cache[key];
   }
-  set(key: string, value: any) {
+  async set(key: string, value: any) {
     this._cache[key] = value;
+    fs.writeFileSync(this._file, JSON.stringify(this._cache));
+  }
+  async delete(key: string) {
+    delete this._cache[key];
     fs.writeFileSync(this._file, JSON.stringify(this._cache));
   }
 }

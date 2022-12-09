@@ -10,6 +10,8 @@ import {
   AccountWithUserInfo,
   isAccountWithUserInfo,
   isAccountWithSessionToken,
+  AccountWithSessionToken,
+  IAccount,
 } from "./interface.js";
 
 enum MessageType {
@@ -53,7 +55,6 @@ export class ChatGPTPoole {
     }
     const cmd = `poetry run python3 src/generate_session.py ${email} ${password}`;
     const platform = process.platform;
-
     const { stdout, stderr, exitCode } = await execa(
       platform === "win32" ? "powershell" : "sh",
       [platform === "win32" ? "/c" : "-c", cmd]
@@ -69,6 +70,64 @@ export class ChatGPTPoole {
       return lines[lines.length - 1];
     }
     return "";
+  }
+  async resetAccount(account: IAccount) {
+    if (isAccountWithUserInfo(account)) {
+      // Remove all conversation information
+      this.conversationsPool.forEach((item, key) => {
+        if ((item.account as AccountWithUserInfo)?.email === account.email) {
+          this.conversationsPool.delete(key);
+        }
+      });
+      // Relogin and generate a new session token
+      const chatGPTItem = this.chatGPTPools
+        .filter((item) => isAccountWithUserInfo(item.account))
+        .find(
+          (
+            item: any
+          ): item is IChatGPTItem & {
+            account: AccountWithUserInfo;
+            chatGpt: ChatGPTAPI;
+          } => item?.email === account.email
+        );
+      if (chatGPTItem) {
+        await this.cache.delete(account.email);
+        try {
+          const session_token = await this.getSessionToken(
+            chatGPTItem.account?.email,
+            chatGPTItem.account?.password
+          );
+          chatGPTItem.chatGpt = new ChatGPTAPI({
+            sessionToken: session_token,
+          });
+        } catch (err) {
+          //remove this object
+          this.chatGPTPools = this.chatGPTPools.filter(
+            (item) =>
+              (item.account as AccountWithUserInfo)?.email !== account.email
+          );
+          console.error(
+            `Try reset account: ${account.email} failed: ${err}, remove it from pool`
+          );
+        }
+      }
+    } else if (isAccountWithSessionToken(account)) {
+      // Remove all conversation information
+      this.conversationsPool.forEach((item, key) => {
+        if (
+          (item.account as AccountWithSessionToken)?.session_token ===
+          account.session_token
+        ) {
+          this.conversationsPool.delete(key);
+        }
+      });
+      // Remove this gptItem
+      this.chatGPTPools = this.chatGPTPools.filter(
+        (item) =>
+          (item.account as AccountWithSessionToken)?.session_token !==
+          account.session_token
+      );
+    }
   }
   async startPools() {
     const sessionAccounts = config.chatGPTAccountPool.filter(
@@ -125,7 +184,7 @@ export class ChatGPTPoole {
     return conversationItem;
   }
   // send message with talkid
-  async sendMessage(message: string, talkid: string) {
+  async sendMessage(message: string, talkid: string): Promise<string> {
     const conversationItem = this.getConversation(talkid);
     const { conversation, account } = conversationItem;
     try {
@@ -133,6 +192,10 @@ export class ChatGPTPoole {
       const response = await conversation.sendMessage(message);
       return response;
     } catch (err: any) {
+      if (err.message.includes("ChatGPT failed to refresh auth token")) {
+        await this.resetAccount(account);
+        return this.sendMessage(message, talkid);
+      }
       console.error(
         `err is ${err.message}, account ${JSON.stringify(account)}`
       );
@@ -166,7 +229,7 @@ export class ChatGPTBot {
     return `@${this.botName}`;
   }
   async startGPTBot() {
-    console.debug(`Start GPT Bot Config is:${config}`);
+    console.debug(`Start GPT Bot Config is:${JSON.stringify(config)}`);
     await this.chatGPTPool.startPools();
     console.debug(`🤖️ Start GPT Bot Success, ready to handle message!`);
   }

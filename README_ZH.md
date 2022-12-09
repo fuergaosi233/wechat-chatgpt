@@ -10,7 +10,7 @@
 </p>
 
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！
-
+[English](README.md) | 中文文档
 ### 🏠 [主页](https://github.com/fuergaosi233/wechat-chatgpt/blob/main/README_ZH.md)
 
 ## 🌟 功能点
@@ -22,7 +22,7 @@
 - [x] 加入 Dockerfile
 - [x] 发布到 Docker.hub
 - [ ] 通过 Railway 进行部署
-- [ ] 实现 OpenAI 账户池的热加载
+- [x] 实现 OpenAI 账户池的热加载
 - [ ] 当 OpenAI 返回码为 429/503 时自动重试
 
 ## 通过 Docker 使用（✅ 推荐）
