@@ -10,14 +10,14 @@ export const isAccountWithUserInfo = (
   account: IAccount
 ): account is AccountWithUserInfo => {
   return (
-    (account as AccountWithUserInfo).email !== undefined &&
-    (account as AccountWithUserInfo).password !== undefined
+    !!(account as AccountWithUserInfo).email &&
+    !!(account as AccountWithUserInfo).password
   );
 };
 export const isAccountWithSessionToken = (
   account: IAccount
 ): account is AccountWithSessionToken => {
-  return (account as AccountWithSessionToken).session_token !== undefined;
+  return !!(account as AccountWithSessionToken).session_token;
 };
 
 // Account will be one in the session token or email and password
