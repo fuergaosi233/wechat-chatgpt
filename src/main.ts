@@ -42,3 +42,4 @@ async function main() {
     );
   }
 }
+main();
