@@ -6,7 +6,6 @@ authors = ["Holegots <fuergaosi@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-revChatGPT = "^0.0.27"
 revchatgpt = "^0.0.33.5"
 [tool.poetry.dev-dependencies]
 
