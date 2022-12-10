@@ -50,8 +50,6 @@ docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegot
 docker logs -f wechat-chatgpt
 ```
 
-配置文件[config.yaml](#获取 OpenAI 的账户并配置到项目中)说明
-
 ## 更新Docker镜像版本
 
 ```sh
