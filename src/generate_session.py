@@ -20,7 +20,7 @@ def login(email: str, password: str) -> str:
         config={
             "email": email,
             "password": password,
-            "proxy": os.environ.get("http_proxy", None),
+            "proxy": os.environ.get("http_proxy",None) or os.environ.get("openAIProxy", None) ,
         },
         conversation_id=None,
     )

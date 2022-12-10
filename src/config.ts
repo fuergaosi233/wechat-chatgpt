@@ -19,6 +19,7 @@ if (fs.existsSync("./config.yaml")) {
     ],
     chatGptRetryTimes: Number(process.env.CHAT_GPT_RETRY_TIMES),
     chatPrivateTiggerKeyword: process.env.CHAT_PRIVATE_TRIGGER_KEYWORD,
+    openAIProxy: process.env.OPENAI_PROXY,
   };
 }
 dotenv.config();
@@ -35,4 +36,6 @@ export const config: IConfig = {
       ""
     ) ||
     "",
+  // Support openai-js use this proxy
+  openAIProxy: configFile.openAIProxy,
 };
