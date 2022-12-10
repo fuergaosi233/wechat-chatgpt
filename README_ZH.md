@@ -9,8 +9,9 @@
   </a>
 </p>
 
+
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！  
-[English](README.md) | 中文文档
+> [English](README.md) | 中文文档
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
 
@@ -30,7 +31,7 @@
 
 ```sh
 cp config.yaml.example config.yaml
-# Change Config.yaml
+# 在当前目录创建并修改config.yaml
 # 在Linux或WindowsPowerShell上运行如下命令
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # 使用二维码登陆
@@ -95,8 +96,7 @@ chatGPTAccountPool:
 chatPrivateTiggerKeyword: ""
 ```
 
-⚠️ 触发关键字必须出现在接收到的消息的第一个位置
-⚠️
+⚠️ 触发关键字必须出现在接收到的消息的第一个位置⚠️
 
 请确保您的终端网络可以登陆 OpenAI。如果登陆失败，请尝试使用代理或使用 SessionToken 方法配置
 
