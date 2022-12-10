@@ -58,7 +58,12 @@ export class ChatGPTPoole {
     const platform = process.platform;
     const { stdout, stderr, exitCode } = await execa(
       platform === "win32" ? "powershell" : "sh",
-      [platform === "win32" ? "/c" : "-c", cmd]
+      [platform === "win32" ? "/c" : "-c", cmd],
+      {
+        env: {
+          https_proxy: config.openAIProxy || process.env.https_proxy,
+        },
+      }
     );
     if (exitCode !== 0) {
       console.error(`${email} login failed: ${stderr}`);

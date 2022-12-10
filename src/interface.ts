@@ -36,4 +36,5 @@ export interface IConfig {
   chatGPTAccountPool: IAccount[];
   chatGptRetryTimes: number;
   chatPrivateTiggerKeyword: string;
+  openAIProxy?: string;
 }
