@@ -40,7 +40,7 @@ const ErrorCode2Message: Record<string, string> = {
   "503":
     "OpenAI 服务器繁忙，请稍后再试| The OpenAI server is busy, please try again later",
   "429":
-    "OpenAI 服务器限流，请稍后再试| The OpenAI server was limted, please try again later",
+    "OpenAI 服务器限流，请稍后再试| The OpenAI server was limited, please try again later",
   "500":
     "OpenAI 服务器繁忙，请稍后再试| The OpenAI server is busy, please try again later",
   unknown: "未知错误，请看日志 | Error unknown, please see the log",
