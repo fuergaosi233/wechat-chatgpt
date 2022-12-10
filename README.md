@@ -49,13 +49,18 @@ docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegot
 docker logs -f wechat-chatgpt
 ```
 
-## Upgrade Docker Image Version
+## Upgrade docker image version
 
 ```sh
 docker pull holegots/wechat-chatgpt:latest
 docker stop wechat-chatgpt
 docker rm wechat-chatgpt
+# run docker command in Linux or WindowsPowerShell
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+# In the Windows command line (cmd) environment, you may mount the current directory like this:
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+# login with qrcode
+docker logs -f wechat-chatgpt
 ```
 
 ## Install

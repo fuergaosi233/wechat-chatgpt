@@ -55,7 +55,12 @@ docker logs -f wechat-chatgpt
 docker pull holegots/wechat-chatgpt:latest
 docker stop wechat-chatgpt
 docker rm wechat-chatgpt
+# 在Linux或WindowsPowerShell上运行如下命令
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+# 在Windows command line (cmd)中, 您需要像这样修改上述代码的挂载目录:
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+# 通过二维码登录
+docker logs -f wechat-chatgpt
 ```
 
 ## 安装
