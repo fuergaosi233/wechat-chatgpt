@@ -13,6 +13,7 @@
 [English](README.md) | 中文文档
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
+
 ## 🌟 功能点
 
 - [x] 通过 wechaty，将 ChatGPT 接入微信
@@ -37,6 +38,7 @@ docker logs -f wechat-chatgpt
 ```
 
 ## 在Windows上通过Docker使用
+
 ```sh
 # 在当前目录创建并修改config.yaml
 # 在WindowsPowerShell中运行如下命令
@@ -46,13 +48,16 @@ docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegot
 # 通过二维码登录
 docker logs -f wechat-chatgpt
 ```
+
 ## 更新Docker镜像版本
+
 ```sh
 docker pull holegots/wechat-chatgpt:latest
 docker stop wechat-chatgpt
 docker rm wechat-chatgpt
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 ```
+
 ## 安装
 
 ```sh
@@ -100,7 +105,7 @@ export http_proxy=<Your Proxy>
 
 如果您无法使用账号密码登陆您的 OpenAI 账户，或者您的终端网络不支持连接到 OpenAI，那么您可以尝试使用 Session Token，请根据如下指示获取：
 
-1. 前往 https://chat.openai.com/chat 并登陆。
+1. 前往 <https://chat.openai.com/chat> 并登陆。
 2. 按下 F12 打开开发者工具.
 3. 点击 Application 选项卡 > Cookies.
    ![image](docs/images/session-token.png)
@@ -118,6 +123,46 @@ npm run dev
 ```
 
 如果您是初次登陆，那么需要扫描二维码
+
+## 使用 Railway 部署
+
+[Railway](https://railway.app/) 是一个部署平台，您可以在其上配置基础架构，在本地使用该基础架构进行开发，然后将其部署到云端。本部分将描述如何快速使用 Railway 部署一个 wechat-chatgpt 项目。  
+
+首先，您需要注册一个 Railway 帐户，并使用 GitHub 验证登录。  
+
+然后点击下面的一键部署按钮进行部署。  
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
+
+完成一些验证操作后，就可以开始部署了。您将看到以下界面：  
+
+![railway-deployment](docs/images/railway-deployment.png)  
+
+您需要配置一些环境变量：  
+
+- **CHAT_GPT_EMAIL** ：您的 OpenAI 帐户电子邮件，如果您有 session_token，则可不填。
+
+- **CHAT_GPT_PASSWORD** ：您的 OpenAI 帐户密码，如果您有 session_token，则可不填。
+
+- **CHAT_GPT_SESSION_TOKEN** ：您的 OpenAI 帐户 session_token，如果您有电子邮件和密码，则可选。请参见上面获取它的方法。
+
+- **CHAT_GPT_RETRY_TIMES** ：当 OpenAI API 返回 429 或 503 时重试的次数。
+
+- **CHAT_PRIVATE_TRIGGER_KEYWORD** ：如果您希望只有一些关键字才能在私人聊天中触发 chatgpt，则可以设置它。
+
+点击“部署”按钮，您的服务将立即开始部署。以下界面出现表示部署已经开始：  
+
+![railway-deploying](docs/images/railway-deploying.png)  
+
+当部署过程显示为成功后，点击查看日志，在部署日志中找到微信登录链接：  
+
+![railway-deployed](docs/images/railway-deployed.png)
+
+点击链接，使用准备好的微信扫码登录。
+
+成功登录并开始发送和接收消息（此过程可能需要几分钟）：  
+
+![railway-success](docs/images/railway-succeed.png)
 
 ## 作者
 
