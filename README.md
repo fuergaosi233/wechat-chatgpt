@@ -29,13 +29,47 @@ English | [中文文档](README_ZH.md)
 ## Use with docker in Linux(recommended)
 
 ```sh
-cp config.yaml.example config.yaml
-# Change Config.yaml
-# run docker command in Linux or WindowsPowerShell
+#1、This configuration file is available for download from this GitHub project
+cp config.yaml.example config.yaml 
+# 2、Change Config.yaml，The meaning of each parameter in the configuration file can refer to configuration methods A and B below
+
+#3、 run docker command in Linux or WindowsPowerShell
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
-# login with qrcode
+# 4、login with qrcode
 docker logs -f wechat-chatgpt
 ```
+
+
+
+## Question：
+
+- Docker started the container, logged into wechat, found that wechat can not trigger the robot
+  - There is reason:
+    - 1、 Please check if your Session Token is out of date. If it is too long, will fail (low probability event, as long as your Token is not taken too long)
+      - Solution: re-fetch below  Session Token
+    - 2、Your configuration file was not successfully copied to the container. The common error is:
+      - (1) After you scan the code and log in to wechat, there is a code prompt in Linux：Start GPT Bot Config is:{"chatGPTAccountPool":[{}],"chatGptRetryTimes":3,"chatPrivateTiggerKeyword":""}   
+      - (2) Also after scanning the code, prompt for the ACCOUNTPOOL account pool, no or 0
+      - The solution:
+        - 1、First, start the image and get the ID number of the container
+        - 2、Get the location of the configuration file in the container: use the command ->>        docker exec  -it b5fbe40ed1cc bash      You can observe the exact path based on what follows Root@
+        - 3、Copy our configuration file to the specified path in the container, using the command:
+          - docker cp  /root/config.yaml ffd1f536c3b0:/app/config.yaml
+            - The first one is the path to the configuration file outside the container. A bunch of strings are the container id, and the app is the path inside the container. Sometimes if the official project gives the path, we don't need to use the second one
+        - 4、Enter the container and use the command     docker exec  -it b5fbe40ed1cc bash，Use the CAT command to see if the configuration file replacement is successful
+        - 5、Finally, restart the container
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Use with docker in Windows
 

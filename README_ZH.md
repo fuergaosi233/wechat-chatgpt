@@ -29,13 +29,37 @@
 ## 在Linux上通过Docker使用（✅ 推荐）
 
 ```sh
+#一、复制配置文件：该配置文件可从本GitHub项目下载
 cp config.yaml.example config.yaml
-# Change Config.yaml
-# 在Linux或WindowsPowerShell上运行如下命令
+# 二、Change Config.yaml，配置文件里各项参数的含义可参考下文的配置方法A和B
+
+#三、 在Linux或WindowsPowerShell上运行如下命令
 docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
-# 使用二维码登陆
+# 四、使用二维码登陆
 docker logs -f wechat-chatgpt
 ```
+
+## 问题：
+
+- docker启动容器，登录微信后，发现在微信无法触发机器人
+  - 存在原因：
+    - 1、请检查你的Session Token是否过期，如果时间太久了，会失效(小概率事件，只要你的token取的时间不是太长)
+      - 解决方法：参考下文重新取Session Token
+    - 2、你的配置文件没有成功拷贝到容器里，常见错误提示为：
+      - (1) 在你扫码登录微信后，linux里提代码提示：Start GPT Bot Config is:{"chatGPTAccountPool":[{}],"chatGptRetryTimes":3,"chatPrivateTiggerKeyword":""}   
+      - (2) 也是在扫码后，提示AccountPool 账号池 没有或者为0
+      - 解决方法：
+        - 1、首先启动镜像，获取容器的id号
+        - 2、获取容器里配置文件的存放位置：使用命令docker exec  -it b5fbe40ed1cc bash      即可根据root@后面的内容观察到具体路径
+        - 3、将我们的配置文件拷贝到容器里的指定路径，使用命令：
+          - docker cp  /root/config.yaml ffd1f536c3b0:/app/config.yaml
+            - 第一个是容器外的配置文件的路径，一大堆字符串的是容器id，app就是容器里的路径，有时候如果官方项目里给了路径，我们就不需要用第二部查看了
+        - 4、进入容器，使用命令docker exec  -it b5fbe40ed1cc bash，使用cat命令查看配置文件是否替换成功
+        - 5、最后，重启启动容器即可
+
+
+
+
 
 ## 在Windows上通过Docker使用
 
