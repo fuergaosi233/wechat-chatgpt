@@ -12,8 +12,7 @@ COPY pyproject.toml ./
 COPY poetry.lock ./
 # Install dependencies
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-RUN poetry add git+https://github.com/suzhiba/ChatGPT.git@main
-
+RUN poetry add git+https://github.com/suzhiba/ChatGPT.git@suzhiba/add_defualt_language_option
 RUN poetry install && npm install && rm -rf ~/.npm/
 
 COPY . .
