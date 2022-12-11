@@ -27,6 +27,12 @@
 - [x] 实现 OpenAI 账户池的热加载
 - [ ] 当 OpenAI 返回码为 429/503 时自动重试
 
+## 构造支持中文的镜像。
+```sh
+# 构建中文版镜像
+docker build -t holegots/wechat-chatgpt:chinese .
+```
+
 ## 在Linux上通过Docker使用（✅ 推荐）
 
 ```sh
