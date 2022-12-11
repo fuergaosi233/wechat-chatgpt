@@ -4,3 +4,4 @@ chatGPTAccountPool:
     session_token: session_token
 chatPrivateTiggerKeyword: ""
 openAIProxy: ""
+blockWords: []
