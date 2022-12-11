@@ -27,7 +27,10 @@ English | [中文文档](README_ZH.md)
 - [ ] Add sendmessage retry for 429/503
 
 ## build Docker
-docker build -t suzhiba:wechat .
+```sh
+# build chinese langeuage version
+docker build -t holegots/wechat-chatgpt:chinese .
+```
 
 ## Use with docker in Linux(recommended)
 
@@ -35,7 +38,7 @@ docker build -t suzhiba:wechat .
 cp config.yaml.example config.yaml
 # Change Config.yaml
 # run docker command in Linux or WindowsPowerShell
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml suzhiba:wechat
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # login with qrcode
 docker logs -f wechat-chatgpt
 ```
@@ -45,9 +48,9 @@ docker logs -f wechat-chatgpt
 ```sh
 # Create and modify config.yaml in the current directory
 # run docker command in WindowsPowerShell
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml suzhiba:wechat
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # In the Windows command line (cmd) environment, you may mount the current directory like this:
-docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml suzhiba:wechat
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # login with qrcode
 docker logs -f wechat-chatgpt
 ```
@@ -59,9 +62,9 @@ docker pull holegots/wechat-chatgpt:latest
 docker stop wechat-chatgpt
 docker rm wechat-chatgpt
 # run docker command in Linux or WindowsPowerShell
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml suzhiba:wechat
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # In the Windows command line (cmd) environment, you may mount the current directory like this:
-docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml suzhiba:wechat
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
 # login with qrcode
 docker logs -f wechat-chatgpt
 ```
