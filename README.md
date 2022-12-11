@@ -12,7 +12,9 @@
 > Use ChatGPT On Wechat via wechaty  
 English | [中文文档](README_ZH.md)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)  
+
+If you don't have a server or want to experience rapid deployment, you can use Railway to do so, see [Usage with Railway](#usage-with-railway).
 
 ## 🌟 Feature
 
@@ -148,7 +150,7 @@ Some environment variables need to be configured:
 
 - **CHAT_GPT_PASSWORD** : Your OpenAI Account password, *if you have session_token, It's optional*.
 
-- **CHAT_GPT_SESSION_TOKEN** : Your OpenAI Account session_token, *if you have email and password, It's optional*.See above for how to get it.
+- **CHAT_GPT_SESSION_TOKEN** : Your OpenAI Account session_token, *if you have email and password, It's optional*.See how to get a token [here](#b-use-session-token).
 
 - **CHAT_GPT_RETRY_TIMES** : The number of times to retry when the OpenAI API returns 429 or 503.
 
@@ -167,6 +169,13 @@ Click to enter and use your prepared WeChat to scan the code to log in.
 Log in successfully and start sending and receiving messages(This process can take several minutes):  
 
 ![railway-success](docs/images/railway-succeed.png)
+
+Besides, in deployment, you may encounter the following issues:  
+
+- **Error: ⚠️ No chatgpt item in pool** : This error means that you have not configured the OpenAI account information correctly. You can solve this problem from the following aspects:1. Check whether the token or openAI account and password are filled in correctly. 2. The token may have expired (experience shows that the expiration time of the token is **24** hours), you can go to the chatGPT official website to re-obtain the token. 3. Redeploy Current Services.Note that the above should be modified on the Variables page in Railway Dashboard.
+- **After the deployment is complete, the QR code is not generated**.Try **refreshing** the page to see again if the Deploy Logs panel generated a link and QR code.
+- **The generated QR code cannot be scanned**.On the generated QR code, there is a link that can be clicked to scan the QR code.
+- **Message feedback is very slow**.Because Railway's servers are deployed overseas, there is an increase in message feedback latency, but it is still within the acceptance range. If you are time sensitive, you can use your own server deployment.
 
 ## Author
 

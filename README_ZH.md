@@ -9,11 +9,12 @@
   </a>
 </p>
 
-
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！  
 > [English](README.md) | 中文文档
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)  
+
+如果你没有自己的服务器或者想体验快速部署，可使用 Railway 进行部署，参见 [Railway 部署](#railway-部署)。
 
 ## 🌟 功能点
 
@@ -149,7 +150,7 @@ npm run dev
 
 - **CHAT_GPT_PASSWORD** ：您的 OpenAI 帐户密码，如果您有 session_token，则可不填。
 
-- **CHAT_GPT_SESSION_TOKEN** ：您的 OpenAI 帐户 session_token，如果您有电子邮件和密码，则可选。请参见上面获取它的方法。
+- **CHAT_GPT_SESSION_TOKEN** ：您的 OpenAI 帐户 session_token，如果您有电子邮件和密码，则可选。请参见 [这里](#b-使用-session-token) 获取 token。
 
 - **CHAT_GPT_RETRY_TIMES** ：当 OpenAI API 返回 429 或 503 时重试的次数。
 
@@ -168,6 +169,13 @@ npm run dev
 成功登录并开始发送和接收消息（此过程可能需要几分钟）：  
 
 ![railway-success](docs/images/railway-succeed.png)
+
+此外，在部署中，您可能会遇到以下问题：
+
+- **Error: ⚠️ No chatgpt item in pool**：此错误表示验证信息有问题。您可以从以下几个方面解决此问题：1.检查 token 或 openAI 账号和密码是否正确填写。2. token 可能已经过期（经验表明 token 的过期时间为**24**小时），您可以到 chatGPT 官网重新获取 token。3. 重新部署当前服务。请注意，应在铁路仪表板的 **Variables** 页面上修改上述内容。
+- **部署完成后，不会生成二维码**。尝试**刷新**页面，再次查看 Deploy Logs 面板是否生成了链接和二维码。
+- **生成的二维码无法扫描**。在生成的二维码上，有一个链接可以点击扫描二维码。
+- **消息反馈缓慢**。由于 Railway 的服务器部署在海外，消息反馈延迟会有所增加，但仍在可接受范围内。如果您对时间敏感，则可以使用自己的服务器部署。
 
 ## 作者
 
