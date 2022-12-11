@@ -274,7 +274,7 @@ export class ChatGPTBot {
       ""
     );
     // remove more text via - - - - - - - - - - - - - - -
-    return text;
+    return text.trim();
   }
   async getGPTMessage(text: string, talkerId: string): Promise<string> {
     return await this.chatGPTPool.sendMessage(text, talkerId);
