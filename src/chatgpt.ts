@@ -318,7 +318,7 @@ export class ChatGPTBot {
     text: string
   ): boolean {
     return (
-      talker.self() ||
+      // talker.self() ||
       messageType > MessageType.GroupNote ||
       talker.name() == "微信团队" ||
       // 语音(视频)消息
@@ -358,7 +358,8 @@ export class ChatGPTBot {
     if (this.tiggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
-        return await this.onPrivateMessage(talker, text);
+        let receiver = (talker.self() ? message.listener() : talker) || talker;
+        return await this.onPrivateMessage(receiver, text);
       } else {
         return await this.onGroupMessage(talker, text, room);
       }
