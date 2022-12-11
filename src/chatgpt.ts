@@ -249,6 +249,7 @@ export class ChatGPTBot {
   cache = new Cache("cache.json");
   chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
   botName: string = "";
+  blockWords = config.blockWords;
   setBotName(botName: string) {
     this.botName = botName;
   }
@@ -326,8 +327,16 @@ export class ChatGPTBot {
       // 红包消息
       text.includes("收到红包，请在手机上查看") ||
       // 位置消息
-      text.includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg")
+      text.includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg") ||
+      // 触发屏蔽词
+      this.checkBlockWords(text)
     );
+  }
+  checkBlockWords(message:string) {
+    if (this.blockWords.length == 0) {
+      return false;
+    }
+    return this.blockWords.some((word) => message.includes(word));
   }
 
   async onPrivateMessage(talker: ContactInterface, text: string) {
