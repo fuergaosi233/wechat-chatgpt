@@ -9,9 +9,11 @@ RUN apt-get update && \
     rm -rf ~/.cache/
 COPY package*.json ./
 COPY pyproject.toml ./
-COPY poetry.lock ./
 # Install dependencies
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+RUN poetry add git+https://github.com/suzhiba/ChatGPT.git@main
+
 RUN poetry install && npm install && rm -rf ~/.npm/
+
 COPY . .
 CMD ["npm", "run", "dev"]

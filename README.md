@@ -26,13 +26,16 @@ English | [中文文档](README_ZH.md)
 - [x] Auto Reload OpenAI Accounts Pool
 - [ ] Add sendmessage retry for 429/503
 
+## build Docker
+docker build -t suzhiba:wechat .
+
 ## Use with docker in Linux(recommended)
 
 ```sh
 cp config.yaml.example config.yaml
 # Change Config.yaml
 # run docker command in Linux or WindowsPowerShell
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml suzhiba:wechat
 # login with qrcode
 docker logs -f wechat-chatgpt
 ```
@@ -42,9 +45,9 @@ docker logs -f wechat-chatgpt
 ```sh
 # Create and modify config.yaml in the current directory
 # run docker command in WindowsPowerShell
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml suzhiba:wechat
 # In the Windows command line (cmd) environment, you may mount the current directory like this:
-docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml suzhiba:wechat
 # login with qrcode
 docker logs -f wechat-chatgpt
 ```
@@ -56,9 +59,9 @@ docker pull holegots/wechat-chatgpt:latest
 docker stop wechat-chatgpt
 docker rm wechat-chatgpt
 # run docker command in Linux or WindowsPowerShell
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml suzhiba:wechat
 # In the Windows command line (cmd) environment, you may mount the current directory like this:
-docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
+docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml suzhiba:wechat
 # login with qrcode
 docker logs -f wechat-chatgpt
 ```
