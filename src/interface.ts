@@ -37,4 +37,6 @@ export interface IConfig {
   chatGptRetryTimes: number;
   chatPrivateTiggerKeyword: string;
   openAIProxy?: string;
+  clearanceToken: string;
+  userAgent: string;
 }

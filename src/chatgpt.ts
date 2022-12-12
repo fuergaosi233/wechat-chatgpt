@@ -105,6 +105,8 @@ export class ChatGPTPoole {
           );
           chatGPTItem.chatGpt = new ChatGPTAPI({
             sessionToken: session_token,
+            clearanceToken: config.clearanceToken,
+            userAgent: config.userAgent,
           });
         } catch (err) {
           //remove this object
@@ -160,6 +162,8 @@ export class ChatGPTPoole {
       return {
         chatGpt: new ChatGPTAPI({
           sessionToken: account.session_token,
+          clearanceToken: config.clearanceToken,
+          userAgent: config.userAgent,
         }),
         account,
       };
@@ -220,7 +224,9 @@ export class ChatGPTPoole {
       return response;
     } catch (err: any) {
       if (err.message.includes("ChatGPT failed to refresh auth token")) {
+        // If refresh token failed, we will remove the conversation from pool
         await this.resetAccount(account);
+        console.log(`Refresh token failed, account ${JSON.stringify(account)}`);
         return this.sendMessage(message, talkid);
       }
       console.error(
@@ -274,7 +280,7 @@ export class ChatGPTBot {
       ""
     );
     // remove more text via - - - - - - - - - - - - - - -
-    return text.trim();
+    return text;
   }
   async getGPTMessage(text: string, talkerId: string): Promise<string> {
     return await this.chatGPTPool.sendMessage(text, talkerId);
