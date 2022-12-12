@@ -2,9 +2,13 @@ import { ChatGPTConversation, ChatGPTAPI } from "chatgpt";
 export interface AccountWithUserInfo {
   password: string;
   email: string;
+  cf_clearance: string;
+  user_agent: string;
 }
 export interface AccountWithSessionToken {
   session_token: string;
+  cf_clearance: string;
+  user_agent: string;
 }
 export const isAccountWithUserInfo = (
   account: IAccount

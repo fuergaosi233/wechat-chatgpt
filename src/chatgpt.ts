@@ -54,7 +54,7 @@ export class ChatGPTPoole {
     if (this.cache.get(email)) {
       return this.cache.get(email);
     }
-    const cmd = `poetry run python3 src/generate_session.py ${email} ${password}`;
+    const cmd = `poetry run python src/generate_session.py ${email} ${password}`;
     const platform = process.platform;
     const { stdout, stderr, exitCode } = await execa(
       platform === "win32" ? "powershell" : "sh",
@@ -105,6 +105,8 @@ export class ChatGPTPoole {
           );
           chatGPTItem.chatGpt = new ChatGPTAPI({
             sessionToken: session_token,
+            clearanceToken: account.cf_clearance,
+            userAgent: account.user_agent
           });
         } catch (err) {
           //remove this object
@@ -150,6 +152,7 @@ export class ChatGPTPoole {
             account.email,
             account.password
           );
+          console.log(`session_token: ${session_token}`);
           return {
             ...account,
             session_token,
@@ -157,9 +160,12 @@ export class ChatGPTPoole {
         })
     );
     this.chatGPTPools = [...sessionAccounts, ...userAccounts].map((account) => {
+      console.log(`chatGPTPoolsaccount: ${JSON.stringify(account)}`);
       return {
         chatGpt: new ChatGPTAPI({
           sessionToken: account.session_token,
+          clearanceToken: account.cf_clearance,
+          userAgent: account.user_agent
         }),
         account,
       };
@@ -188,10 +194,12 @@ export class ChatGPTPoole {
   }
   // Randome get conversation item form pool
   getConversation(talkid: string): IConversationItem {
+    console.log(this.conversationsPool.has(talkid));
     if (this.conversationsPool.has(talkid)) {
       return this.conversationsPool.get(talkid) as IConversationItem;
     }
     const chatGPT = this.chatGPTAPI;
+    console.log("chatGPT:",chatGPT);
     if (!chatGPT) {
       throw new Error("⚠️ No chatgpt item in pool");
     }
@@ -219,13 +227,13 @@ export class ChatGPTPoole {
       const response = await conversation.sendMessage(message);
       return response;
     } catch (err: any) {
+      console.error(
+        `err is ${err.message}, account ${JSON.stringify(account)}`
+      );
       if (err.message.includes("ChatGPT failed to refresh auth token")) {
         await this.resetAccount(account);
         return this.sendMessage(message, talkid);
       }
-      console.error(
-        `err is ${err.message}, account ${JSON.stringify(account)}`
-      );
       // If send message failed, we will remove the conversation from pool
       this.conversationsPool.delete(talkid);
       // Retry
@@ -319,7 +327,7 @@ export class ChatGPTBot {
     text: string
   ): boolean {
     return (
-      talker.self() ||
+      // talker.self() ||
       messageType > MessageType.GroupNote ||
       talker.name() == "微信团队" ||
       // 语音(视频)消息
@@ -367,7 +375,9 @@ export class ChatGPTBot {
     if (this.tiggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
-        return await this.onPrivateMessage(talker, text);
+        let receiver = (talker.self() ? message.listener() : talker) || talker;
+        return await this.onPrivateMessage(receiver, text);
+        // return await this.onPrivateMessage(talker, text);
       } else {
         return await this.onGroupMessage(talker, text, room);
       }
