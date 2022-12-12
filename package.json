@@ -6,7 +6,9 @@
   "export": "dist/main.js",
   "scripts": {
     "dev": "nodemon --exec node --watch config.yaml --loader ts-node/esm src/main.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "pm2 start dist/main.js --name wechat-chatgpt"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +16,7 @@
     "chatgpt": "^2.1.1",
     "dotenv": "^16.0.3",
     "execa": "^6.1.0",
+    "pm2": "^5.2.2",
     "qrcode": "^1.5.1",
     "uuid": "^9.0.0",
     "wechaty": "^1.20.2",

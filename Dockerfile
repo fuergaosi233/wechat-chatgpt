@@ -14,4 +14,5 @@ COPY poetry.lock ./
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN poetry install && npm install && rm -rf ~/.npm/
 COPY . .
+RUN npm run build
 CMD ["npm", "run", "dev"]
