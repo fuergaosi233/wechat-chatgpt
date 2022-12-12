@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chatgpt": "^2.0.1",
+    "chatgpt": "^2.1.1",
     "dotenv": "^16.0.3",
     "execa": "^6.1.0",
     "qrcode": "^1.5.1",
