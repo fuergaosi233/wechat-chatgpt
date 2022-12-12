@@ -105,6 +105,8 @@ export class ChatGPTPoole {
           );
           chatGPTItem.chatGpt = new ChatGPTAPI({
             sessionToken: session_token,
+            clearanceToken: account.cf_clearance,
+            userAgent: account.user_agent
           });
         } catch (err) {
           //remove this object
@@ -160,6 +162,8 @@ export class ChatGPTPoole {
       return {
         chatGpt: new ChatGPTAPI({
           sessionToken: account.session_token,
+          clearanceToken: account.cf_clearance,
+          userAgent: account.user_agent
         }),
         account,
       };

@@ -2,5 +2,7 @@ chatGPTAccountPool:
   - email: email
     password: password
     session_token: session_token
+    cf_clearance: cf_clearance
+    user_agent: user_agent
 chatPrivateTiggerKeyword: ""
 openAIProxy: ""
