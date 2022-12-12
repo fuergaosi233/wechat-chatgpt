@@ -41,5 +41,21 @@ async function main() {
       `⚠️ Bot start failed, can you log in through wechat on the web?: ${e}`
     );
   }
+  process
+    .on("unhandledRejection", (reason: Error, p) => {
+      if (
+        reason.message.includes("ECONNRESET") ||
+        reason.message.includes("AxiosError")
+      ) {
+        console.error(
+          `Unhandled Rejection at: Promise ${p}, reason: ${reason} exit(0)`
+        );
+        process.exit(1);
+      }
+    })
+    .on("uncaughtException", (err) => {
+      console.error(err);
+      console.error(err, "Uncaught Exception thrown");
+    });
 }
 main();
