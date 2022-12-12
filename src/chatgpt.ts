@@ -318,7 +318,7 @@ export class ChatGPTBot {
     text: string
   ): boolean {
     return (
-      // talker.self() ||
+      (talker.self() && messageType != MessageType.Text) ||
       messageType > MessageType.GroupNote ||
       talker.name() == "微信团队" ||
       // 语音(视频)消息
