@@ -16,6 +16,15 @@ English | [中文文档](README_ZH.md)
 
 If you don't have a server or want to experience rapid deployment, you can use Railway to do so, see [Usage with Railway](#usage-with-railway).
 
+# Update December 13, 2022
+Yesterday (2022.12.12), OpenAI upgraded the authentication measures. 
+
+It causes `⚠️ No chatgpt item in pool` when you use this project.  
+
+However, please rest assured that we are actively looking for an effective solution, 
+
+If you have a good solution, feel free to contribute!
+
 ## 🌟 Feature
 
 - [x] Use ChatGPT On Wechat via wechaty
