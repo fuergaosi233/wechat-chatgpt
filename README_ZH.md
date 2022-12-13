@@ -94,7 +94,7 @@ chatGPTAccountPool:
   - email: <your email>
     password: <your password>
 # 如果你希望只有一些关键字可以在私人聊天中触发chatgpt，你可以这样设置:
-chatPrivateTiggerKeyword: ""
+chatPrivateTriggerKeyword: ""
 ```
 
 ⚠️ 触发关键字必须出现在接收到的消息的第一个位置⚠️

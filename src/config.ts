@@ -18,7 +18,7 @@ if (fs.existsSync("./config.yaml")) {
       },
     ],
     chatGptRetryTimes: Number(process.env.CHAT_GPT_RETRY_TIMES),
-    chatPrivateTiggerKeyword: process.env.CHAT_PRIVATE_TRIGGER_KEYWORD,
+    chatPrivateTriggerKeyword: process.env.CHAT_PRIVATE_TRIGGER_KEYWORD,
     openAIProxy: process.env.OPENAI_PROXY,
     clearanceToken: process.env.CF_CLEARANCE,
     userAgent: process.env.USER_AGENT,
@@ -29,8 +29,8 @@ dotenv.config();
 export const config: IConfig = {
   chatGPTAccountPool: configFile.chatGPTAccountPool as Array<IAccount>,
   chatGptRetryTimes: configFile.chatGptRetryTimes || 3,
-  chatPrivateTiggerKeyword:
-    configFile.chatPrivateTiggerKeyword ||
+  chatPrivateTriggerKeyword:
+    configFile.chatPrivateTriggerKeyword ||
     // Try compatible with previous designs
     (configFile?.botConfig as Array<Map<string, string>>)?.reduce(
       (prev: string, curr: Map<string, string>) =>

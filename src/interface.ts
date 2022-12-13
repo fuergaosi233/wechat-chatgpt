@@ -35,7 +35,7 @@ export interface IConversationItem {
 export interface IConfig {
   chatGPTAccountPool: IAccount[];
   chatGptRetryTimes: number;
-  chatPrivateTiggerKeyword: string;
+  chatPrivateTriggerKeyword: string;
   openAIProxy?: string;
   clearanceToken: string;
   userAgent: string;
