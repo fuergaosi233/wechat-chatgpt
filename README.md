@@ -108,8 +108,17 @@ chatPrivateTiggerKeyword: ""
 ```
 
 ⚠️ Trigger keywords must appear in the first position of the received message.
-⚠️ Pls make sure your network can log in to OpenAI, and if you fail to login in try setting up a proxy or using SessionToken.  
+⚠️ Pls make sure your network can log in to OpenAI, and if you fail to login in try setting up a proxy or using SessionToken.
+
 **Setup proxy:**
+
+You can configure in `config.yaml`:
+
+```yaml
+openAIProxy: <Your Proxy>
+```
+
+Or you can export to environment variable:
 
 ```sh
 export http_proxy=<Your Proxy>
@@ -123,12 +132,42 @@ If you cant use email and password to login your openai account or your network 
 2. Open dev tools.
 3. Open Application > Cookies.
    ![image](docs/images/session-token.png)
-4. Copy the value for \_\_Secure-next-auth.session-token and save it to your config
-   Your config.yaml should be like this:
+4. Copy the value for `\_\_Secure-next-auth.session-token`, save it to your config
+
+Your `config.yaml` should be like this:
 
 ```yaml
 chatGPTAccountPool:
   - session_token: <your session_token>
+```
+
+#### **Configure Cloudflare Token**
+
+We also need Cloudflare token to build the connection successfully. Similar to getting the session token, you need to copy the value for `cf_clearance`, save it to your config file.
+
+![image](docs/images/cloudflare-token.png)
+
+Your `config.yaml` should be like this:
+
+```yaml
+clearanceToken: <your cloudflare_token>
+```
+
+#### **Configure User Agent**
+
+We have provided a sample `userAgent` in `config.yaml.example`. But you can also set up your own user agent, which can be found in following steps:
+
+1. Open dev tools
+2. Open network
+3. Find `User-Agent` in request headers
+4. Copy the value for `User-Agent`, save it to your config
+
+![image](docs/images/user-agent.png)
+
+Your `config.yaml` should be like this:
+
+```yaml
+userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
 ```
 
 ### Start Project
@@ -149,11 +188,11 @@ Then click the one-click deployment button below to deploy.
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
 
-After some validation is complete, you can begin the deployment.You will see the following interface:  
+After some validation is complete, you can begin the deployment.You will see the following interface:
 
-![railway-deployment](docs/images/railway-deployment.png)  
+![railway-deployment](docs/images/railway-deployment.png)
 
-Some environment variables need to be configured:  
+Some environment variables need to be configured:
 
 - **CHAT_GPT_EMAIL** : Your OpenAI Account email, if you have session_token, It's optional.
 
@@ -165,21 +204,25 @@ Some environment variables need to be configured:
 
 - **CHAT_PRIVATE_TRIGGER_KEYWORD** : If you hope only some keywords can trigger chatgpt on private chat, you can set it.
 
-Click the Deploy button and your service will start deploying shortly.The following interface appears to indicate that the deployment has begun:  
+- **CF_CLEARANCE** : Your Cloudflare's clearance token. See how to get a token [here](#configure-cloudflare-token).
 
-![railway-deploying](docs/images/railway-deploying.png)  
+- **USER_AGENT**: Your user-agent. See how to get [here](#configure-user-agent).
 
-When the deployment is displayed successfully, click to view the logs and find the WeChat login link in Deploy Logs.  
+Click the Deploy button and your service will start deploying shortly.The following interface appears to indicate that the deployment has begun:
 
-![railway-deployed](docs/images/railway-deployed.png)  
+![railway-deploying](docs/images/railway-deploying.png)
+
+When the deployment is displayed successfully, click to view the logs and find the WeChat login link in Deploy Logs.
+
+![railway-deployed](docs/images/railway-deployed.png)
 
 Click to enter and use your prepared WeChat to scan the code to log in.
 
-Log in successfully and start sending and receiving messages(This process can take several minutes):  
+Log in successfully and start sending and receiving messages(This process can take several minutes):
 
 ![railway-success](docs/images/railway-succeed.png)
 
-Besides, in deployment, you may encounter the following issues:  
+Besides, in deployment, you may encounter the following issues:
 
 - **Error: ⚠️ No chatgpt item in pool** : This error means that you have not configured the OpenAI account information correctly. You can solve this problem from the following aspects:1. Check whether the token or openAI account and password are filled in correctly. 2. The token may have expired (experience shows that the expiration time of the token is **24** hours), you can go to the chatGPT official website to re-obtain the token. 3. Redeploy Current Services.Note that the above should be modified on the Variables page in Railway Dashboard.
 - **After the deployment is complete, the QR code is not generated**.Try **refreshing** the page to see again if the Deploy Logs panel generated a link and QR code.
