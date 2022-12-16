@@ -253,12 +253,12 @@ export class ChatGPTBot {
   conversations = new Map<string, ChatGPTConversation>();
   chatGPTPool = new ChatGPTPoole();
   cache = new Cache("cache.json");
-  chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
+  chatPrivateTriggerKeyword = config.chatPrivateTriggerKeyword;
   botName: string = "";
   setBotName(botName: string) {
     this.botName = botName;
   }
-  get chatGroupTiggerKeyword(): string {
+  get chatGroupTriggerKeyword(): string {
     return `@${this.botName}`;
   }
   async startGPTBot() {
@@ -276,7 +276,7 @@ export class ChatGPTBot {
       text = item[item.length - 1];
     }
     text = text.replace(
-      privateChat ? this.chatPrivateTiggerKeyword : this.chatGroupTiggerKeyword,
+      privateChat ? this.chatPrivateTriggerKeyword : this.chatGroupTriggerKeyword,
       ""
     );
     // remove more text via - - - - - - - - - - - - - - -
@@ -302,15 +302,15 @@ export class ChatGPTBot {
     }
   }
   // Check whether the ChatGPT processing can be triggered
-  tiggerGPTMessage(text: string, privateChat: boolean = false): boolean {
-    const chatPrivateTiggerKeyword = this.chatPrivateTiggerKeyword;
+  triggerGPTMessage(text: string, privateChat: boolean = false): boolean {
+    const chatPrivateTriggerKeyword = this.chatPrivateTriggerKeyword;
     let triggered = false;
     if (privateChat) {
-      triggered = chatPrivateTiggerKeyword
-        ? text.includes(chatPrivateTiggerKeyword)
+      triggered = chatPrivateTriggerKeyword
+        ? text.includes(chatPrivateTriggerKeyword)
         : true;
     } else {
-      triggered = text.includes(this.chatGroupTiggerKeyword);
+      triggered = text.includes(this.chatGroupTriggerKeyword);
     }
     if (triggered) {
       console.log(`🎯 Triggered ChatGPT: ${text}`);
@@ -361,7 +361,7 @@ export class ChatGPTBot {
     if (this.isNonsense(talker, messageType, rawText)) {
       return;
     }
-    if (this.tiggerGPTMessage(rawText, privateChat)) {
+    if (this.triggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
         return await this.onPrivateMessage(talker, text);
