@@ -1,4 +1,4 @@
-import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
+import { ChatGPTAPI, ChatGPTAPIBrowser } from "chatgpt";
 import { Message } from "wechaty";
 import { config } from "./config.js";
 import { execa } from "execa";
@@ -8,9 +8,6 @@ import {
   IChatGPTItem,
   IConversationItem,
   AccountWithUserInfo,
-  isAccountWithUserInfo,
-  isAccountWithSessionToken,
-  AccountWithSessionToken,
   IAccount,
 } from "./interface.js";
 
@@ -78,96 +75,58 @@ export class ChatGPTPoole {
     return "";
   }
   async resetAccount(account: IAccount) {
-    if (isAccountWithUserInfo(account)) {
-      // Remove all conversation information
-      this.conversationsPool.forEach((item, key) => {
-        if ((item.account as AccountWithUserInfo)?.email === account.email) {
-          this.conversationsPool.delete(key);
-        }
-      });
-      // Relogin and generate a new session token
-      const chatGPTItem = this.chatGPTPools
-        .filter((item) => isAccountWithUserInfo(item.account))
-        .find(
-          (
-            item: any
-          ): item is IChatGPTItem & {
-            account: AccountWithUserInfo;
-            chatGpt: ChatGPTAPI;
-          } => item.account.email === account.email
-        );
-      if (chatGPTItem) {
-        await this.cache.delete(account.email);
-        try {
-          const session_token = await this.getSessionToken(
-            chatGPTItem.account?.email,
-            chatGPTItem.account?.password
-          );
-          chatGPTItem.chatGpt = new ChatGPTAPI({
-            sessionToken: session_token,
-            clearanceToken: config.clearanceToken,
-            userAgent: config.userAgent,
-          });
-        } catch (err) {
-          //remove this object
-          this.chatGPTPools = this.chatGPTPools.filter(
-            (item) =>
-              (item.account as AccountWithUserInfo)?.email !== account.email
-          );
-          console.error(
-            `Try reset account: ${account.email} failed: ${err}, remove it from pool`
-          );
-        }
+    // Remove all conversation information
+    this.conversationsPool.forEach((item, key) => {
+      if ((item.account as AccountWithUserInfo)?.email === account.email) {
+        this.conversationsPool.delete(key);
       }
-    } else if (isAccountWithSessionToken(account)) {
-      // Remove all conversation information
-      this.conversationsPool.forEach((item, key) => {
-        if (
-          (item.account as AccountWithSessionToken)?.session_token ===
-          account.session_token
-        ) {
-          this.conversationsPool.delete(key);
-        }
-      });
-      // Remove this gptItem
-      this.chatGPTPools = this.chatGPTPools.filter(
-        (item) =>
-          (item.account as AccountWithSessionToken)?.session_token !==
-          account.session_token
-      );
+    });
+    // Relogin and generate a new session token
+    const chatGPTItem = this.chatGPTPools.find(
+      (
+        item: any
+      ): item is IChatGPTItem & {
+        account: AccountWithUserInfo;
+        chatGpt: ChatGPTAPI;
+      } => item.account.email === account.email
+    );
+    if (chatGPTItem) {
+      const account = chatGPTItem.account;
+      try {
+        chatGPTItem.chatGpt = new ChatGPTAPIBrowser({
+          ...account,
+          proxyServer: config.openAIProxy,
+        });
+      } catch (err) {
+        //remove this object
+        this.chatGPTPools = this.chatGPTPools.filter(
+          (item) =>
+            (item.account as AccountWithUserInfo)?.email !== account.email
+        );
+        console.error(
+          `Try reset account: ${account.email} failed: ${err}, remove it from pool`
+        );
+      }
     }
   }
   resetConversation(talkid: string) {
     this.conversationsPool.delete(talkid);
   }
   async startPools() {
-    const sessionAccounts = config.chatGPTAccountPool.filter(
-      isAccountWithSessionToken
+    const chatGPTPools = await Promise.all(
+      config.chatGPTAccountPool.map(async (account) => {
+        const chatGpt = new ChatGPTAPIBrowser({
+          ...account,
+          proxyServer: config.openAIProxy,
+        });
+        await chatGpt.initSession();
+        return {
+          chatGpt: chatGpt,
+          account: account,
+        };
+      })
     );
-    const userAccounts = await Promise.all(
-      config.chatGPTAccountPool
-        .filter(isAccountWithUserInfo)
-        .map(async (account: AccountWithUserInfo) => {
-          const session_token = await this.getSessionToken(
-            account.email,
-            account.password
-          );
-          return {
-            ...account,
-            session_token,
-          };
-        })
-    );
-    this.chatGPTPools = [...sessionAccounts, ...userAccounts].map((account) => {
-      return {
-        chatGpt: new ChatGPTAPI({
-          sessionToken: account.session_token,
-          clearanceToken: config.clearanceToken,
-          userAgent: config.userAgent,
-        }),
-        account,
-      };
-    });
+    this.chatGPTPools = chatGPTPools;
     if (this.chatGPTPools.length === 0) {
       throw new Error("⚠️ No chatgpt account in pool");
     }
@@ -199,7 +158,8 @@ export class ChatGPTPoole {
     if (!chatGPT) {
       throw new Error("⚠️ No chatgpt item in pool");
     }
-    const conversation = chatGPT.chatGpt.getConversation();
+    //TODO: Add conversation implementation
+    const conversation = chatGPT.chatGpt;
     const conversationItem = {
       conversation,
       account: chatGPT.account,
@@ -220,7 +180,7 @@ export class ChatGPTPoole {
     const { conversation, account } = conversationItem;
     try {
       // TODO: Add Retry logic
-      const response = await conversation.sendMessage(message);
+      const { response } = await conversation.sendMessage(message);
       return response;
     } catch (err: any) {
       if (err.message.includes("ChatGPT failed to refresh auth token")) {
@@ -250,7 +210,6 @@ export class ChatGPTPoole {
 }
 export class ChatGPTBot {
   // Record talkid with conversation id
-  conversations = new Map<string, ChatGPTConversation>();
   chatGPTPool = new ChatGPTPoole();
   cache = new Cache("cache.json");
   chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
