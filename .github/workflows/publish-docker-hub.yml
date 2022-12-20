@@ -40,5 +40,6 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          platforms: linux/amd64,linux/arm64
+          # FIXME: Chrome doesn't seem to install on ARM, so skip it for now
+          # platforms: linux/amd64,linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
