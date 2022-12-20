@@ -27,6 +27,9 @@ async function main() {
       await chatGPTBot.startGPTBot();
     })
     .on("message", async (message) => {
+      if (!chatGPTBot.ready) {
+        return;
+      }
       if (message.text().startsWith("/ping ")) {
         await message.say("pong");
         return;

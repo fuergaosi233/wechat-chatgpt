@@ -1,8 +1,6 @@
 import { ChatGPTAPI, ChatGPTAPIBrowser } from "chatgpt";
 import { Message } from "wechaty";
 import { config } from "./config.js";
-import { execa } from "execa";
-import { Cache } from "./cache.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
 import {
   IChatGPTItem,
@@ -46,34 +44,6 @@ const Commands = ["/reset", "/help"] as const;
 export class ChatGPTPoole {
   chatGPTPools: Array<IChatGPTItem> | [] = [];
   conversationsPool: Map<string, IConversationItem> = new Map();
-  cache = new Cache("cache.json");
-  async getSessionToken(email: string, password: string): Promise<string> {
-    if (this.cache.get(email)) {
-      return this.cache.get(email);
-    }
-    const cmd = `poetry run python3 src/generate_session.py ${email} ${password}`;
-    const platform = process.platform;
-    const { stdout, stderr, exitCode } = await execa(
-      platform === "win32" ? "powershell" : "sh",
-      [platform === "win32" ? "/c" : "-c", cmd],
-      {
-        env: {
-          https_proxy: config.openAIProxy || process.env.https_proxy,
-        },
-      }
-    );
-    if (exitCode !== 0) {
-      console.error(`${email} login failed: ${stderr}`);
-      return "";
-    }
-    // The last line in stdout is the session token
-    const lines = stdout.split("\n");
-    if (lines.length > 0) {
-      this.cache.set(email, lines[lines.length - 1]);
-      return lines[lines.length - 1];
-    }
-    return "";
-  }
   async resetAccount(account: IAccount) {
     // Remove all conversation information
     this.conversationsPool.forEach((item, key) => {
@@ -167,6 +137,14 @@ export class ChatGPTPoole {
     this.conversationsPool.set(talkid, conversationItem);
     return conversationItem;
   }
+  setConversation(talkid: string, conversationId: string, messageId: string) {
+    const conversationItem = this.getConversation(talkid);
+    this.conversationsPool.set(talkid, {
+      ...conversationItem,
+      conversationId,
+      messageId,
+    });
+  }
   // send message with talkid
   async sendMessage(message: string, talkid: string): Promise<string> {
     if (
@@ -177,10 +155,20 @@ export class ChatGPTPoole {
       return this.command(message as typeof Commands[number], talkid);
     }
     const conversationItem = this.getConversation(talkid);
-    const { conversation, account } = conversationItem;
+    const { conversation, account, conversationId, messageId } =
+      conversationItem;
     try {
       // TODO: Add Retry logic
-      const { response } = await conversation.sendMessage(message);
+      const {
+        response,
+        conversationId: newConversationId,
+        messageId: newMessageId,
+      } = await conversation.sendMessage(message, {
+        conversationId,
+        messageId,
+      });
+      // Update conversation information
+      this.setConversation(talkid, newConversationId, newMessageId);
       return response;
     } catch (err: any) {
       if (err.message.includes("ChatGPT failed to refresh auth token")) {
@@ -211,9 +199,9 @@ export class ChatGPTPoole {
 export class ChatGPTBot {
   // Record talkid with conversation id
   chatGPTPool = new ChatGPTPoole();
-  cache = new Cache("cache.json");
   chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
   botName: string = "";
+  ready = false;
   setBotName(botName: string) {
     this.botName = botName;
   }
@@ -224,6 +212,7 @@ export class ChatGPTBot {
     console.debug(`Start GPT Bot Config is:${JSON.stringify(config)}`);
     await this.chatGPTPool.startPools();
     console.debug(`🤖️ Start GPT Bot Success, ready to handle message!`);
+    this.ready = true;
   }
   // TODO: Add reset conversation id and ping pong
   async command(): Promise<void> {}

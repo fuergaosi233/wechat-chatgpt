@@ -14,6 +14,8 @@ export interface IChatGPTItem {
 export interface IConversationItem {
   conversation: ChatGPTAPIBrowser;
   account: IAccount;
+  conversationId?: string;
+  messageId?: string;
 }
 
 export interface IConfig {
