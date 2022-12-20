@@ -1,4 +1,5 @@
 import { ChatGPTAPI, ChatGPTAPIBrowser } from "chatgpt";
+import delay from 'delay'
 
 import { config } from "./config.js";
 
@@ -136,34 +137,38 @@ export class ChatGPTPool {
     const conversationItem = this.getConversation(talkid);
     const { conversation, account, conversationId, messageId } =
       conversationItem;
-    try {
-      // TODO: Add Retry logic
-      const {
-        response,
-        conversationId: newConversationId,
-        messageId: newMessageId,
-      } = await conversation.sendMessage(message, {
-        conversationId,
-        messageId,
-      });
-      // Update conversation information
-      this.setConversation(talkid, newConversationId, newMessageId);
-      return response;
-    } catch (err: any) {
-      if (err.message.includes("ChatGPT failed to refresh auth token")) {
-        // If refresh token failed, we will remove the conversation from pool
-        await this.resetAccount(account);
-        console.log(`Refresh token failed, account ${JSON.stringify(account)}`);
-        return this.sendMessage(message, talkid);
+
+    let numTries = 0
+    do {
+      try {
+        const {
+          response,
+          conversationId: newConversationId,
+          messageId: newMessageId,
+        } = await conversation.sendMessage(message, {
+          conversationId,
+          messageId,
+        });
+        // Update conversation information
+        this.setConversation(talkid, newConversationId, newMessageId);
+        return response;
+      } catch (err: any) {
+        // Retry logic
+        if (err.statusCode !== 403 || ++numTries >= 2) {
+          await this.resetAccount(account);
+          console.error(
+              `err is ${err.message}, account ${JSON.stringify(account)}`
+          );
+          // If send message failed, we will remove the conversation from pool
+          this.conversationsPool.delete(talkid);
+          return this.error2msg(err);
+        }
+
+        // Retry
+        console.warn('chatgpt sendMessage error; retrying...', err.toString())
+        await delay(5000)
       }
-      console.error(
-        `err is ${err.message}, account ${JSON.stringify(account)}`
-      );
-      // If send message failed, we will remove the conversation from pool
-      this.conversationsPool.delete(talkid);
-      // Retry
-      return this.error2msg(err);
-    }
+    } while (true)
   }
   // Make error code to more human readable message.
   error2msg(err: Error): string {
