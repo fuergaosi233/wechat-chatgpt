@@ -16,12 +16,19 @@ English | [中文文档](README_ZH.md)
 
 If you don't have a server or want to experience rapid deployment, you can use Railway to do so, see [Usage with Railway](#usage-with-railway).
 
-# Update December 13, 2022
-Yesterday (2022.12.12), OpenAI upgraded the authentication measures. 
+### Update December 20, 2022
+
+Thanks @transitive-bullshit, The ChatGPT API automates the work.  
+You should use password & username to login, and config [CAPTCHAs](#CAPTCHAS).  
+⚠️ There may be a problem with the Docker image because I don't have an X86 device and Qume doesn't work.
+
+### Update December 13, 2022
+
+Yesterday (2022.12.12), OpenAI upgraded the authentication measures.
 
 It causes `⚠️ No chatgpt item in pool` when you use this project.  
 
-However, please rest assured that we are actively looking for an effective solution, 
+However, please rest assured that we are actively looking for an effective solution,
 
 If you have a good solution, feel free to contribute!
 
@@ -30,7 +37,7 @@ If you have a good solution, feel free to contribute!
 - [x] Use ChatGPT On Wechat via wechaty
 - [x] Support OpenAI Accounts Pool
 - [x] Support use proxy to login
-- [x] Add conversation Support (Everyone will have their own session)
+- [x] Add conversation Support
 - [x] Add Dockerfile
 - [x] Publish to Docker.hub
 - [x] Add Railway deploy
@@ -80,7 +87,7 @@ docker logs -f wechat-chatgpt
 npm install && poetry install
 ```
 
-## Usage with manual
+## Config
 
 ### Copy config
 
@@ -94,7 +101,7 @@ cp config.yaml.example config.yaml
 
 > If you don't have this OpenAI account and you live in China, you can get it [here](https://mirror.xyz/boxchen.eth/9O9CSqyKDj4BKUIil7NC1Sa1LJM-3hsPqaeW_QjfFBc).
 
-#### **A：Use account and password**
+#### Use account and password
 
 You need get OpenAI account and password.
 Your config.yaml should be like this:
@@ -118,59 +125,23 @@ You can configure in `config.yaml`:
 openAIProxy: <Your Proxy>
 ```
 
-Or you can export to environment variable:
+### CAPTCHAS
 
-```sh
-export http_proxy=<Your Proxy>
-```
+> The browser portions of this package use Puppeteer to automate as much as possible, including solving all CAPTCHAs. 🔥
 
-#### **B: Use Session Token**
+> Basic Cloudflare CAPTCHAs are handled by default, but if you want to automate the email + password Recaptchas, you'll need to sign up for one of these paid providers:
 
-If you cant use email and password to login your openai account or your network can't login, you can use session token. You need to follow these steps:
+> - [nopecha](https://nopecha.com/) - Uses AI to solve CAPTCHAS
+>   - Faster and cheaper
+>   - Set the `NOPECHA_KEY` env var to your nopecha API key
+>   - [Demo video](https://user-images.githubusercontent.com/552829/208235991-de4890f2-e7ba-4b42-bf55-4fcd792d4b19.mp4) of nopecha solving the login Recaptcha (41 seconds)
+> - [2captcha](https://2captcha.com) - Uses real people to solve CAPTCHAS
+>   - More well-known solution that's been around longer
+>   - Set the `CAPTCHA_TOKEN` env var to your 2captcha API token
 
-1. Go to <https://chat.openai.com/chat> and log in or sign up.
-2. Open dev tools.
-3. Open Application > Cookies.
-   ![image](docs/images/session-token.png)
-4. Copy the value for `\_\_Secure-next-auth.session-token`, save it to your config
+So you should config `NOPECHA_KEY` or `CAPTCHA_TOKEN` in your Environment Variables.
 
-Your `config.yaml` should be like this:
-
-```yaml
-chatGPTAccountPool:
-  - session_token: <your session_token>
-```
-
-#### **Configure Cloudflare Token**
-
-We also need Cloudflare token to build the connection successfully. Similar to getting the session token, you need to copy the value for `cf_clearance`, save it to your config file.
-
-![image](docs/images/cloudflare-token.png)
-
-Your `config.yaml` should be like this:
-
-```yaml
-clearanceToken: <your cloudflare_token>
-```
-
-#### **Configure User Agent**
-
-We have provided a sample `userAgent` in `config.yaml.example`. But you can also set up your own user agent, which can be found in following steps:
-
-1. Open dev tools
-2. Open network
-3. Find `User-Agent` in request headers
-4. Copy the value for `User-Agent`, save it to your config
-
-![image](docs/images/user-agent.png)
-
-Your `config.yaml` should be like this:
-
-```yaml
-userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
-```
-
-### Start Project
+## Start Project
 
 ```sh
 npm run dev
@@ -198,15 +169,9 @@ Some environment variables need to be configured:
 
 - **CHAT_GPT_PASSWORD** : Your OpenAI Account password, *if you have session_token, It's optional*.
 
-- **CHAT_GPT_SESSION_TOKEN** : Your OpenAI Account session_token, *if you have email and password, It's optional*.See how to get a token [here](#b-use-session-token).
-
 - **CHAT_GPT_RETRY_TIMES** : The number of times to retry when the OpenAI API returns 429 or 503.
 
 - **CHAT_PRIVATE_TRIGGER_KEYWORD** : If you hope only some keywords can trigger chatgpt on private chat, you can set it.
-
-- **CF_CLEARANCE** : Your Cloudflare's clearance token. See how to get a token [here](#configure-cloudflare-token).
-
-- **USER_AGENT**: Your user-agent. See how to get [here](#configure-user-agent).
 
 Click the Deploy button and your service will start deploying shortly.The following interface appears to indicate that the deployment has begun:
 
