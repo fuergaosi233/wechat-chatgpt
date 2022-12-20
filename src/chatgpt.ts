@@ -145,7 +145,7 @@ export class ChatGPTPool {
         messageId: newMessageId,
       } = await conversation.sendMessage(message, {
         conversationId,
-        messageId,
+        parentMessageId: messageId,
       });
       // Update conversation information
       this.setConversation(talkid, newConversationId, newMessageId);
