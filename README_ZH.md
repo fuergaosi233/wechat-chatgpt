@@ -12,11 +12,16 @@
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！  
 > [English](README.md) | 中文文档
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)  
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
 
 如果你没有自己的服务器或者想体验快速部署，可使用 Railway 进行部署，参见 [Railway 部署](#railway-部署)。
 
-# 2022.12.12 更新
+### 2022.12.20 更新
+
+感谢 @transitive-bullshit [的工]()作, 使得ChatGPT API可以自动完成这项工作。
+现在可以使用密码的用户名来登录, 并配置打码 [CAPTCHAs](#CAPTCHAS) 来使得整个流程全自动化.
+
+### 2022.12.12 更新
 昨天（2022.12.12），OpenAI 加入了CloudFlare认证措施。
 
 这使得本项目在运行是会出现 `⚠️ No chatgpt item in pool` 的错误。
@@ -28,7 +33,7 @@
 - [x] 通过 wechaty，将 ChatGPT 接入微信
 - [x] 创建 OpenAI 的账户池
 - [x] 支持通过代理登陆 OpenAI
-- [x] 加入了持续对话的功能（每一个微信用户都保持自己的对话上下文）
+- [x] 加入了持续对话的功能
 - [x] 加入 Dockerfile
 - [x] 发布到 Docker.hub
 - [x] 通过 Railway 进行部署
@@ -78,7 +83,7 @@ docker logs -f wechat-chatgpt
 npm install && poetry install
 ```
 
-## 手动安装
+## 配置
 
 ### 复制配置文件
 
@@ -92,7 +97,7 @@ cp config.yaml.example config.yaml
 
 > 如果你没有 OpenAI 的账号，并且您在无法访问 OpenAI 的国家或地区，你可以查看[here](https://mirror.xyz/boxchen.eth/9O9CSqyKDj4BKUIil7NC1Sa1LJM-3hsPqaeW_QjfFBc).
 
-#### **配置方法 A：使用账号密码**
+#### 配置方法 A：使用账号密码
 
 可以在配置文件中输入你的账号密码，格式如下
 
@@ -109,12 +114,23 @@ chatPrivateTiggerKeyword: ""
 请确保您的终端网络可以登陆 OpenAI。如果登陆失败，请尝试使用代理或使用 SessionToken 方法配置
 
 **设置代理:**
-
+编辑配置文件 `config.yaml`
 ```sh
 export http_proxy=<Your Proxy>
 ```
 
-#### **B: 使用 Session Token**
+### CAPTCHAS
+> 该版本使用Puppeteer来尽可能的实现全自动化, 包括验证码 🔥
+> Cloudflare CAPTCHAs是默认处理的, 但如果你想自动处理 邮箱+密码 的Recaptchas, 则需要使用付费的打码平台
+> - [nopecha](https://nopecha.com/) - Uses AI to solve CAPTCHAS
+    >   - Faster and cheaper
+    >   - Set the `NOPECHA_KEY` env var to your nopecha API key
+>   - [Demo video](https://user-images.githubusercontent.com/552829/208235991-de4890f2-e7ba-4b42-bf55-4fcd792d4b19.mp4) of nopecha solving the login Recaptcha (41 seconds)
+> - [2captcha](https://2captcha.com) - Uses real people to solve CAPTCHAS
+    >   - More well-known solution that's been around longer
+    >   - Set the `CAPTCHA_TOKEN` env var to your 2captcha API token
+
+如果你需要实现全自动化, 则需要配置`NOPECHA_KEY`或`CAPTCHA_TOKEN`。
 
 如果您无法使用账号密码登陆您的 OpenAI 账户，或者您的终端网络不支持连接到 OpenAI，那么您可以尝试使用 Session Token，请根据如下指示获取：
 
@@ -123,11 +139,6 @@ export http_proxy=<Your Proxy>
 3. 点击 Application 选项卡 > Cookies.
    ![image](docs/images/session-token.png)
 4. 复制 \_\_Secure-next-auth.session-token 的值，并且以如下方式配置到您的项目中：
-
-```yaml
-chatGPTAccountPool:
-  - session_token: <your session_token>
-```
 
 ### 启动项目
 
@@ -139,41 +150,39 @@ npm run dev
 
 ## 使用 Railway 部署
 
-[Railway](https://railway.app/) 是一个部署平台，您可以在其上配置基础架构，在本地使用该基础架构进行开发，然后将其部署到云端。本部分将描述如何快速使用 Railway 部署一个 wechat-chatgpt 项目。  
+[Railway](https://railway.app/) 是一个部署平台，您可以在其上配置基础架构，在本地使用该基础架构进行开发，然后将其部署到云端。本部分将描述如何快速使用 Railway 部署一个 wechat-chatgpt 项目。
 
-首先，您需要注册一个 Railway 帐户，并使用 GitHub 验证登录。  
+首先，您需要注册一个 Railway 帐户，并使用 GitHub 验证登录。
 
-然后点击下面的一键部署按钮进行部署。  
+然后点击下面的一键部署按钮进行部署。
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
 
-完成一些验证操作后，就可以开始部署了。您将看到以下界面：  
+完成一些验证操作后，就可以开始部署了。您将看到以下界面：
 
-![railway-deployment](docs/images/railway-deployment.png)  
+![railway-deployment](docs/images/railway-deployment.png)
 
-您需要配置一些环境变量：  
+您需要配置一些环境变量：
 
 - **CHAT_GPT_EMAIL** ：您的 OpenAI 帐户电子邮件，如果您有 session_token，则可不填。
 
 - **CHAT_GPT_PASSWORD** ：您的 OpenAI 帐户密码，如果您有 session_token，则可不填。
 
-- **CHAT_GPT_SESSION_TOKEN** ：您的 OpenAI 帐户 session_token，如果您有电子邮件和密码，则可选。请参见 [这里](#b-使用-session-token) 获取 token。
-
 - **CHAT_GPT_RETRY_TIMES** ：当 OpenAI API 返回 429 或 503 时重试的次数。
 
 - **CHAT_PRIVATE_TRIGGER_KEYWORD** ：如果您希望只有一些关键字才能在私人聊天中触发 chatgpt，则可以设置它。
 
-点击“部署”按钮，您的服务将立即开始部署。以下界面出现表示部署已经开始：  
+点击“部署”按钮，您的服务将立即开始部署。以下界面出现表示部署已经开始：
 
-![railway-deploying](docs/images/railway-deploying.png)  
+![railway-deploying](docs/images/railway-deploying.png)
 
-当部署过程显示为成功后，点击查看日志，在部署日志中找到微信登录链接：  
+当部署过程显示为成功后，点击查看日志，在部署日志中找到微信登录链接：
 
 ![railway-deployed](docs/images/railway-deployed.png)
 
 点击链接，使用准备好的微信扫码登录。
 
-成功登录并开始发送和接收消息（此过程可能需要几分钟）：  
+成功登录并开始发送和接收消息（此过程可能需要几分钟）：
 
 ![railway-success](docs/images/railway-succeed.png)
 
