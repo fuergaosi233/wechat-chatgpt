@@ -14,7 +14,6 @@ if (fs.existsSync("./config.yaml")) {
       {
         email: process.env.CHAT_GPT_EMAIL,
         password: process.env.CHAT_GPT_PASSWORD,
-        session_token: process.env.CHAT_GPT_SESSION_TOKEN,
       },
     ],
     chatGptRetryTimes: Number(process.env.CHAT_GPT_RETRY_TIMES),
