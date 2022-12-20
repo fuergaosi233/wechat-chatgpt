@@ -42,6 +42,7 @@ If you have a good solution, feel free to contribute!
 - [x] Publish to Docker.hub
 - [x] Add Railway deploy
 - [x] Auto Reload OpenAI Accounts Pool
+- [x] Add sendmessage retry for 403
 - [ ] Add sendmessage retry for 429/503
 
 ## Use with docker in Linux(recommended)
@@ -110,6 +111,8 @@ Your config.yaml should be like this:
 chatGPTAccountPool:
   - email: <your email>
     password: <your password>
+    # if you want to log in with your Google account, you can set it to 'true'
+    isGoogleLogin: false
 # if you hope only some keywords can trigger chatgpt on private chat, you can set it like this:
 chatPrivateTiggerKeyword: ""
 ```

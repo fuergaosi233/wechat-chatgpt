@@ -33,6 +33,7 @@
 - [x] 发布到 Docker.hub
 - [x] 通过 Railway 进行部署
 - [x] 实现 OpenAI 账户池的热加载
+- [x] 当 OpenAI 返回码为 403 时自动重试
 - [ ] 当 OpenAI 返回码为 429/503 时自动重试
 
 ## 在Linux上通过Docker使用（✅ 推荐）
@@ -100,6 +101,8 @@ cp config.yaml.example config.yaml
 chatGPTAccountPool:
   - email: <your email>
     password: <your password>
+    # 如果你想通过谷歌账号登录，你可以设置为true
+    isGoogleLogin: false
 # 如果你希望只有一些关键字可以在私人聊天中触发chatgpt，你可以这样设置:
 chatPrivateTiggerKeyword: ""
 ```
