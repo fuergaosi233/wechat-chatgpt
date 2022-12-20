@@ -2,6 +2,7 @@ import { ChatGPTAPIBrowser } from "chatgpt";
 export interface AccountWithUserInfo {
   password: string;
   email: string;
+  isGoogleLogin: boolean;
 }
 
 // Account will be one in the session token or email and password
