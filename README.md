@@ -24,13 +24,13 @@ You should use password & username to login, and config [CAPTCHAs](#CAPTCHAS).
 
 ### Update December 13, 2022
 
-Yesterday (2022.12.12), OpenAI upgraded the authentication measures.
+~~Yesterday (2022.12.12), OpenAI upgraded the authentication measures.~~
 
-It causes `⚠️ No chatgpt item in pool` when you use this project.  
+~~It causes `⚠️ No chatgpt item in pool` when you use this project.~~
 
-However, please rest assured that we are actively looking for an effective solution,
+~~However, please rest assured that we are actively looking for an effective solution,~~
 
-If you have a good solution, feel free to contribute!
+~~If you have a good solution, feel free to contribute!~~
 
 ## 🌟 Feature
 
