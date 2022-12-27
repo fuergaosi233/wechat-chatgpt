@@ -14,13 +14,13 @@ if (fs.existsSync("./config.yaml")) {
       {
         email: process.env.CHAT_GPT_EMAIL,
         password: process.env.CHAT_GPT_PASSWORD,
-        session_token: process.env.CHAT_GPT_SESSION_TOKEN,
       },
     ],
     chatGptRetryTimes: Number(process.env.CHAT_GPT_RETRY_TIMES),
     chatPrivateTiggerKeyword: process.env.CHAT_PRIVATE_TRIGGER_KEYWORD,
     openAIProxy: process.env.OPENAI_PROXY,
-    blockWords: process.env.BLOCK_WORDS,
+    clearanceToken: process.env.CF_CLEARANCE,
+    userAgent: process.env.USER_AGENT,
   };
 }
 dotenv.config();
@@ -39,5 +39,6 @@ export const config: IConfig = {
     "",
   // Support openai-js use this proxy
   openAIProxy: configFile.openAIProxy,
-  blockWords: configFile.blockWords,
+  clearanceToken: configFile.clearanceToken,
+  userAgent: configFile.userAgent,
 };
