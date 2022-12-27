@@ -16,6 +16,9 @@
 
 如果你没有自己的服务器或者想体验快速部署，可使用 Railway 进行部署，参见 [Railway 部署](#railway-部署)。
 
+### 2022.12.27 更新
+目前, 使用 Docker 或 Railway 部署, 会出现意料之外的问题, 我们正在努力解决。
+
 ### 2022.12.20 更新
 
 感谢 @transitive-bullshit [的工]()作, 使得ChatGPT API可以自动完成这项工作。
