@@ -12,9 +12,9 @@
 > Use ChatGPT On Wechat via wechaty  
 English | [中文文档](README_ZH.md)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)  
+~~[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)  ~~
 
-If you don't have a server or want to experience rapid deployment, you can use Railway to do so, see [Usage with Railway](#usage-with-railway).
+~~If you don't have a server or want to experience rapid deployment, you can use Railway to do so, see [Usage with Railway](#usage-with-railway).~~
 
 ### Update Decomber 27, 2022
 Using railway & docker deployment, there may be problems that cannot be solved, we are working on it.

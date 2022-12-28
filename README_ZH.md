@@ -12,9 +12,9 @@
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！  
 > [English](README.md) | 中文文档
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
+~~[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)~~
 
-如果你没有自己的服务器或者想体验快速部署，可使用 Railway 进行部署，参见 [Railway 部署](#railway-部署)。
+~~如果你没有自己的服务器或者想体验快速部署，可使用 Railway 进行部署，参见 [Railway 部署](#railway-部署)。~~
 
 ### 2022.12.27 更新
 目前, 使用 Docker 或 Railway 部署, 会出现意料之外的问题, 我们正在努力解决。
