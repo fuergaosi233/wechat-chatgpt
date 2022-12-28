@@ -118,8 +118,8 @@ chatPrivateTiggerKeyword: ""
 
 **设置代理:**
 编辑配置文件 `config.yaml`
-```sh
-export http_proxy=<Your Proxy>
+```yaml
+openAIProxy: <代理地址>
 ```
 
 ### CAPTCHAS
@@ -134,14 +134,6 @@ export http_proxy=<Your Proxy>
     >   - Set the `CAPTCHA_TOKEN` env var to your 2captcha API token
 
 如果你需要实现全自动化, 则需要配置`NOPECHA_KEY`或`CAPTCHA_TOKEN`。
-
-如果您无法使用账号密码登陆您的 OpenAI 账户，或者您的终端网络不支持连接到 OpenAI，那么您可以尝试使用 Session Token，请根据如下指示获取：
-
-1. 前往 <https://chat.openai.com/chat> 并登陆。
-2. 按下 F12 打开开发者工具.
-3. 点击 Application 选项卡 > Cookies.
-   ![image](docs/images/session-token.png)
-4. 复制 \_\_Secure-next-auth.session-token 的值，并且以如下方式配置到您的项目中：
 
 ### 启动项目
 
@@ -173,7 +165,7 @@ npm run dev
 
 - **CHAT_GPT_RETRY_TIMES** ：当 OpenAI API 返回 429 或 503 时重试的次数。
 
-- **CHAT_PRIVATE_TRIGGER_KEYWORD** ：如果您希望只有一些关键字才能在私人聊天中触发 chatgpt，则可以设置它。
+- **CHAT_PRIVATE_TRIGGER_KEYWORD** ：如果您希望只有一些关键字才能在私人聊天中触发 ChatGPT，则可以设置它。
 
 点击“部署”按钮，您的服务将立即开始部署。以下界面出现表示部署已经开始：
 
