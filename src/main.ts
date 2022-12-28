@@ -13,6 +13,7 @@ const bot = WechatyBuilder.build({
 // get a Wechaty instance
 
 async function main() {
+  await chatGPTBot.startGPTBot();
   bot
     .on("scan", async (qrcode, status) => {
       const url = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`;
@@ -24,7 +25,6 @@ async function main() {
     .on("login", async (user) => {
       console.log(`User ${user} logged in`);
       chatGPTBot.setBotName(user.name());
-      await chatGPTBot.startGPTBot();
     })
     .on("message", async (message) => {
       if (!chatGPTBot.ready) {

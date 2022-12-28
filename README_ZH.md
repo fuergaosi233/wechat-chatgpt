@@ -12,24 +12,14 @@
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！  
 > [English](README.md) | 中文文档
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
-
-如果你没有自己的服务器或者想体验快速部署，可使用 Railway 进行部署，参见 [Railway 部署](#railway-部署)。
-
 ### 2022.12.27 更新
 目前, 使用 Docker 或 Railway 部署, 会出现意料之外的问题, 我们正在努力解决。
 
 ### 2022.12.20 更新
 
-感谢 @transitive-bullshit [的工]()作, 使得ChatGPT API可以自动完成这项工作。
+感谢 @transitive-bullshit 的工作, 使得ChatGPT API可以自动完成这项工作。
 现在可以使用密码的用户名来登录, 并配置打码 [CAPTCHAs](#CAPTCHAS) 来使得整个流程全自动化.
 
-### 2022.12.12 更新
-~~昨天（2022.12.12），OpenAI 加入了CloudFlare认证措施。~~
-
-~~这使得本项目在运行是会出现 `⚠️ No chatgpt item in pool` 的错误。~~
-
-~~我们正在积极寻找有效的解决方案，如果你有好的解决方案，欢迎贡献！~~
 
 ## 🌟 功能点
 
@@ -41,44 +31,7 @@
 - [x] 发布到 Docker.hub
 - [x] 通过 Railway 进行部署
 - [x] 实现 OpenAI 账户池的热加载
-- [ ] 当 OpenAI 返回码为 429/503 时自动重试
-
-## 在Linux上通过Docker使用（✅ 推荐）
-
-```sh
-cp config.yaml.example config.yaml
-# 在当前目录创建并修改config.yaml
-# 在Linux或WindowsPowerShell上运行如下命令
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
-# 使用二维码登陆
-docker logs -f wechat-chatgpt
-```
-
-## 在Windows上通过Docker使用
-
-```sh
-# 在当前目录创建并修改config.yaml
-# 在WindowsPowerShell中运行如下命令
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
-# 在Windows command line (cmd)中, 您需要像这样修改上述代码的挂载目录:
-docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
-# 通过二维码登录
-docker logs -f wechat-chatgpt
-```
-
-## 更新Docker镜像版本
-
-```sh
-docker pull holegots/wechat-chatgpt:latest
-docker stop wechat-chatgpt
-docker rm wechat-chatgpt
-# 在Linux或WindowsPowerShell上运行如下命令
-docker run -d --name wechat-chatgpt -v $(pwd)/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
-# 在Windows command line (cmd)中, 您需要像这样修改上述代码的挂载目录:
-docker run -d --name wechat-chatgpt -v %cd%/config.yaml:/app/config.yaml holegots/wechat-chatgpt:latest
-# 通过二维码登录
-docker logs -f wechat-chatgpt
-```
+- [X] 当 OpenAI 返回码为 429/503 时自动重试
 
 ## 安装
 
@@ -142,52 +95,6 @@ npm run dev
 ```
 
 如果您是初次登陆，那么需要扫描二维码
-
-## 使用 Railway 部署
-
-[Railway](https://railway.app/) 是一个部署平台，您可以在其上配置基础架构，在本地使用该基础架构进行开发，然后将其部署到云端。本部分将描述如何快速使用 Railway 部署一个 wechat-chatgpt 项目。
-
-首先，您需要注册一个 Railway 帐户，并使用 GitHub 验证登录。
-
-然后点击下面的一键部署按钮进行部署。
-
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/BHJD6L?referralCode=FaJtD_)
-
-完成一些验证操作后，就可以开始部署了。您将看到以下界面：
-
-![railway-deployment](docs/images/railway-deployment.png)
-
-您需要配置一些环境变量：
-
-- **CHAT_GPT_EMAIL** ：您的 OpenAI 帐户电子邮件，如果您有 session_token，则可不填。
-
-- **CHAT_GPT_PASSWORD** ：您的 OpenAI 帐户密码，如果您有 session_token，则可不填。
-
-- **CHAT_GPT_RETRY_TIMES** ：当 OpenAI API 返回 429 或 503 时重试的次数。
-
-- **CHAT_PRIVATE_TRIGGER_KEYWORD** ：如果您希望只有一些关键字才能在私人聊天中触发 ChatGPT，则可以设置它。
-
-点击“部署”按钮，您的服务将立即开始部署。以下界面出现表示部署已经开始：
-
-![railway-deploying](docs/images/railway-deploying.png)
-
-当部署过程显示为成功后，点击查看日志，在部署日志中找到微信登录链接：
-
-![railway-deployed](docs/images/railway-deployed.png)
-
-点击链接，使用准备好的微信扫码登录。
-
-成功登录并开始发送和接收消息（此过程可能需要几分钟）：
-
-![railway-success](docs/images/railway-succeed.png)
-
-此外，在部署中，您可能会遇到以下问题：
-
-- **Error: ⚠️ No chatgpt item in pool**：此错误表示验证信息有问题。您可以从以下几个方面解决此问题：1.检查 token 或 openAI 账号和密码是否正确填写。2. token 可能已经过期（经验表明 token 的过期时间为**24**小时），您可以到 chatGPT 官网重新获取 token。3. 重新部署当前服务。请注意，应在铁路仪表板的 **Variables** 页面上修改上述内容。
-- **部署完成后，不会生成二维码**。尝试**刷新**页面，再次查看 Deploy Logs 面板是否生成了链接和二维码。
-- **生成的二维码无法扫描**。在生成的二维码上，有一个链接可以点击扫描二维码。
-- **消息反馈缓慢**。由于 Railway 的服务器部署在海外，消息反馈延迟会有所增加，但仍在可接受范围内。如果您对时间敏感，则可以使用自己的服务器部署。
-
 ## 作者
 
 👤 **holegots**
