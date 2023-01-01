@@ -85,6 +85,7 @@ docker logs -f wechat-chatgpt
 ```sh
 npm install && poetry install
 ```
+> 请确认安装的NodeJS版本为18.0.0以上, Python版本为3.9.0以上
 
 ## 配置
 

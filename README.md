@@ -89,6 +89,7 @@ docker logs -f wechat-chatgpt
 ```sh
 npm install && poetry install
 ```
+> NodeJS Version >= 18.0.0  Python Version >= 3.9.0
 
 ## Config
 
