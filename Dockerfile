@@ -8,7 +8,7 @@ RUN apt-get install -y wget \
     && rm -rf /var/lib/apt/lists/* \
     && echo "Chrome: " && google-chrome --version
 WORKDIR /app
-COPY package*.json .
+COPY package*.json ./
 RUN npm install
 COPY . .
 ENV WECHATY_PUPPET_WECHAT_ENDPOINT=/usr/bin/google-chrome

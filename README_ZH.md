@@ -157,9 +157,9 @@ npm run dev
 
 您需要配置一些环境变量：
 
-- **CHAT_GPT_EMAIL** ：您的 OpenAI 帐户电子邮件，如果您有 session_token，则可不填。
+- **CHAT_GPT_EMAIL** ：您的 OpenAI 帐户电子邮件。
 
-- **CHAT_GPT_PASSWORD** ：您的 OpenAI 帐户密码，如果您有 session_token，则可不填。
+- **CHAT_GPT_PASSWORD** ：您的 OpenAI 帐户密码。
 
 - **CHAT_GPT_RETRY_TIMES** ：当 OpenAI API 返回 429 或 503 时重试的次数。
 
@@ -181,7 +181,7 @@ npm run dev
 
 此外，在部署中，您可能会遇到以下问题：
 
-- **Error: ⚠️ No chatgpt item in pool**：此错误表示验证信息有问题。您可以从以下几个方面解决此问题：1.检查 token 或 openAI 账号和密码是否正确填写。2. token 可能已经过期（经验表明 token 的过期时间为**24**小时），您可以到 chatGPT 官网重新获取 token。3. 重新部署当前服务。请注意，应在铁路仪表板的 **Variables** 页面上修改上述内容。
+- **Error: ⚠️ No chatgpt item in pool**：此错误表示验证信息有问题。您可以从以下几个方面解决此问题：1.检查 token 或 openAI 账号和密码是否正确填写。2. 重新部署当前服务。请注意，应在铁路仪表板的 **Variables** 页面上修改上述内容。 3. 请确认是否出现了CloudFlare人机验证, 如果出现了CloudFlare的人机验证, 则可能导致 Headless 浏览器无法成功模拟登录。
 - **部署完成后，不会生成二维码**。尝试**刷新**页面，再次查看 Deploy Logs 面板是否生成了链接和二维码。
 - **生成的二维码无法扫描**。在生成的二维码上，有一个链接可以点击扫描二维码。
 - **消息反馈缓慢**。由于 Railway 的服务器部署在海外，消息反馈延迟会有所增加，但仍在可接受范围内。如果您对时间敏感，则可以使用自己的服务器部署。
