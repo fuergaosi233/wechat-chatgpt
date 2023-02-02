@@ -1,7 +1,6 @@
-import { ChatGPTAPI, ChatGPTAPIBrowser } from "chatgpt";
+import { ChatGPTAPI } from "chatgpt";
 
 import { config } from "./config.js";
-import AsyncRetry from "async-retry";
 import {
   IChatGPTItem,
   IConversationItem,
@@ -43,10 +42,7 @@ export class ChatGPTPool {
     if (chatGPTItem) {
       const account = chatGPTItem.account;
       try {
-        chatGPTItem.chatGpt = new ChatGPTAPIBrowser({
-          ...account,
-          proxyServer: config.openAIProxy,
-        });
+        console.log("Placeholder...")
       } catch (err) {
         //remove this object
         this.chatGPTPools = this.chatGPTPools.filter(
@@ -65,17 +61,11 @@ export class ChatGPTPool {
   async startPools() {
     const chatGPTPools = [];
     for (const account of config.chatGPTAccountPool) {
-      const chatGpt = new ChatGPTAPIBrowser({
-        ...account,
-        proxyServer: config.openAIProxy,
-      });
+      const chatGpt = new ChatGPTAPI({
+        apiKey: process.env.OPENAI_API_KEY as string,
+        debug: true,
+      })
       try {
-        await AsyncRetry(
-          async () => {
-            await chatGpt.initSession();
-          },
-          { retries: 3 }
-        );
         chatGPTPools.push({
           chatGpt: chatGpt,
           account: account,
@@ -86,19 +76,6 @@ export class ChatGPTPool {
         );
       }
     }
-    // this.chatGPTPools = await Promise.all(
-    //   config.chatGPTAccountPool.map(async (account) => {
-    //     const chatGpt = new ChatGPTAPIBrowser({
-    //       ...account,
-    //       proxyServer: config.openAIProxy,
-    //     });
-    //     await chatGpt.initSession();
-    //     return {
-    //       chatGpt: chatGpt,
-    //       account: account,
-    //     };
-    //   })
-    // );
     this.chatGPTPools = chatGPTPools;
     if (this.chatGPTPools.length === 0) {
       throw new Error("⚠️ No chatgpt account in pool");
@@ -140,7 +117,8 @@ export class ChatGPTPool {
     this.conversationsPool.set(talkid, conversationItem);
     return conversationItem;
   }
-  setConversation(talkid: string, conversationId: string, messageId: string) {
+
+  setConversation(talkid: string, conversationId: string | undefined, messageId: string | undefined) {
     const conversationItem = this.getConversation(talkid);
     this.conversationsPool.set(talkid, {
       ...conversationItem,
@@ -163,9 +141,11 @@ export class ChatGPTPool {
     try {
       // TODO: Add Retry logic
       const {
-        response,
+        id,
+        text: response,
+        role,
         conversationId: newConversationId,
-        messageId: newMessageId,
+        parentMessageId: newMessageId,
       } = await conversation.sendMessage(message, {
         conversationId,
         parentMessageId: messageId,
