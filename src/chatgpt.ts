@@ -10,7 +10,6 @@ import {
   IAccount,
 } from "./interface.js";
 
-const ApiKey = "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";
 const ErrorCode2Message: Record<string, string> = {
   "503":
     "OpenAI 服务器繁忙，请稍后再试| The OpenAI server is busy, please try again later",
@@ -46,7 +45,7 @@ export class ChatGPTPool {
       const account = chatGPTItem.account;
       try {
         chatGPTItem.chatGpt = new ChatGPTAPI({
-          apiKey: ApiKey
+          apiKey: process.env.OPENAI_API_KEY + ""
         });
       } catch (err) {
         //remove this object
@@ -67,7 +66,7 @@ export class ChatGPTPool {
     const chatGPTPools = [];
     for (const account of config.chatGPTAccountPool) {
       const chatGpt = new ChatGPTAPI({
-        apiKey: ApiKey
+        apiKey: process.env.OPENAI_API_KEY + ""
       });
       try {
         // await AsyncRetry(
