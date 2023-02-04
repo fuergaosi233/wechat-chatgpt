@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "async-retry": "^1.3.3",
-    "chatgpt": "^3.5.2",
+    "chatgpt": "^4.1.1",
     "dotenv": "^16.0.3",
     "execa": "^6.1.0",
     "qrcode": "^1.5.1",

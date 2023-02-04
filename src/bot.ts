@@ -59,13 +59,16 @@ export class ChatGPTBot {
     return text;
   }
   async getGPTMessage(text: string, talkerId: string): Promise<string> {
-    return await this.chatGPTPool.sendMessage(text, talkerId);
+    let ret = await this.chatGPTPool.sendMessage(text, talkerId);
+    console.log(`chatgpt return: ${ret}`);
+    return ret;
   }
   // The message is segmented according to its size
   async trySay(
     talker: RoomInterface | ContactInterface,
     mesasge: string
   ): Promise<void> {
+    console.log(`trySay: ${mesasge}`);
     const messages: Array<string> = [];
     let message = mesasge;
     while (message.length > SINGLE_MESSAGE_MAX_SIZE) {

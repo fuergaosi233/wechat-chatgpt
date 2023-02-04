@@ -1,4 +1,5 @@
-import { ChatGPTAPI, ChatGPTAPIBrowser } from "chatgpt";
+import { ChatGPTAPI } from "chatgpt";
+import { v4 as uuidv4 } from "uuid";
 
 import { config } from "./config.js";
 import AsyncRetry from "async-retry";
@@ -9,6 +10,7 @@ import {
   IAccount,
 } from "./interface.js";
 
+const ApiKey = "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";
 const ErrorCode2Message: Record<string, string> = {
   "503":
     "OpenAI 服务器繁忙，请稍后再试| The OpenAI server is busy, please try again later",
@@ -43,9 +45,8 @@ export class ChatGPTPool {
     if (chatGPTItem) {
       const account = chatGPTItem.account;
       try {
-        chatGPTItem.chatGpt = new ChatGPTAPIBrowser({
-          ...account,
-          proxyServer: config.openAIProxy,
+        chatGPTItem.chatGpt = new ChatGPTAPI({
+          apiKey: ApiKey
         });
       } catch (err) {
         //remove this object
@@ -65,17 +66,18 @@ export class ChatGPTPool {
   async startPools() {
     const chatGPTPools = [];
     for (const account of config.chatGPTAccountPool) {
-      const chatGpt = new ChatGPTAPIBrowser({
-        ...account,
-        proxyServer: config.openAIProxy,
+      const chatGpt = new ChatGPTAPI({
+        apiKey: ApiKey
       });
       try {
-        await AsyncRetry(
-          async () => {
-            await chatGpt.initSession();
-          },
-          { retries: 3 }
-        );
+        // await AsyncRetry(
+        //   async () => {
+        //     await chatGpt.initSession();
+        //   },
+        //   { retries: 3 }
+        // );
+        // const res = await chatGpt.sendMessage('Hello World!')
+        // console.log(`res.text: ${res.text}`)
         chatGPTPools.push({
           chatGpt: chatGpt,
           account: account,
@@ -163,9 +165,11 @@ export class ChatGPTPool {
     try {
       // TODO: Add Retry logic
       const {
-        response,
-        conversationId: newConversationId,
-        messageId: newMessageId,
+        id: newMessageId,
+        text: response,
+        role: Role,
+        parentMessageId: parentMessageId,
+        conversationId: newConversationId = uuidv4()
       } = await conversation.sendMessage(message, {
         conversationId,
         parentMessageId: messageId,
