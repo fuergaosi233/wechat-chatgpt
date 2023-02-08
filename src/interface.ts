@@ -1,19 +1,18 @@
-import { ChatGPTAPIBrowser } from "chatgpt";
+import { ChatGPTAPI } from "chatgpt";
 export interface AccountWithUserInfo {
-  password: string;
   email: string;
-  isGoogleLogin: boolean;
+  apiKey: string;
 }
 
 // Account will be one in the session token or email and password
 export type IAccount = AccountWithUserInfo;
 
 export interface IChatGPTItem {
-  chatGpt: ChatGPTAPIBrowser;
+  chatGpt: ChatGPTAPI;
   account: IAccount;
 }
 export interface IConversationItem {
-  conversation: ChatGPTAPIBrowser;
+  conversation: ChatGPTAPI;
   account: IAccount;
   conversationId?: string;
   messageId?: string;

@@ -4,7 +4,7 @@ import { parse } from "yaml";
 import fs from "fs";
 import { IConfig, IAccount } from "./interface";
 // If config file exist read config file. else read config from environment variables.
-let configFile: any = {};
+let configFile: any;
 if (fs.existsSync("./config.yaml")) {
   const file = fs.readFileSync("./config.yaml", "utf8");
   configFile = parse(file);
@@ -14,6 +14,7 @@ if (fs.existsSync("./config.yaml")) {
       {
         email: process.env.CHAT_GPT_EMAIL,
         password: process.env.CHAT_GPT_PASSWORD,
+        apiKey: process.env.CHAT_GPT_API_KEY
       },
     ],
     chatGptRetryTimes: Number(process.env.CHAT_GPT_RETRY_TIMES),

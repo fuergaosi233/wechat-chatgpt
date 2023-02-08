@@ -1,7 +1,6 @@
-import { ChatGPTAPI, ChatGPTAPIBrowser } from "chatgpt";
+import { ChatGPTAPI } from "chatgpt";
 
 import { config } from "./config.js";
-import AsyncRetry from "async-retry";
 import {
   IChatGPTItem,
   IConversationItem,
@@ -27,7 +26,7 @@ export class ChatGPTPool {
   async resetAccount(account: IAccount) {
     // Remove all conversation information
     this.conversationsPool.forEach((item, key) => {
-      if ((item.account as AccountWithUserInfo)?.email === account.email) {
+      if ((item.account)?.email === account.email) {
         this.conversationsPool.delete(key);
       }
     });
@@ -43,15 +42,14 @@ export class ChatGPTPool {
     if (chatGPTItem) {
       const account = chatGPTItem.account;
       try {
-        chatGPTItem.chatGpt = new ChatGPTAPIBrowser({
+        chatGPTItem.chatGpt = new ChatGPTAPI({
           ...account,
-          proxyServer: config.openAIProxy,
         });
       } catch (err) {
         //remove this object
         this.chatGPTPools = this.chatGPTPools.filter(
           (item) =>
-            (item.account as AccountWithUserInfo)?.email !== account.email
+            (item.account)?.email !== account.email
         );
         console.error(
           `Try reset account: ${account.email} failed: ${err}, remove it from pool`
@@ -65,17 +63,10 @@ export class ChatGPTPool {
   async startPools() {
     const chatGPTPools = [];
     for (const account of config.chatGPTAccountPool) {
-      const chatGpt = new ChatGPTAPIBrowser({
-        ...account,
-        proxyServer: config.openAIProxy,
+      const chatGpt = new ChatGPTAPI({
+        ...account
       });
       try {
-        await AsyncRetry(
-          async () => {
-            await chatGpt.initSession();
-          },
-          { retries: 3 }
-        );
         chatGPTPools.push({
           chatGpt: chatGpt,
           account: account,
@@ -140,7 +131,8 @@ export class ChatGPTPool {
     this.conversationsPool.set(talkid, conversationItem);
     return conversationItem;
   }
-  setConversation(talkid: string, conversationId: string, messageId: string) {
+
+  setConversation(talkid: string, conversationId: string | undefined, messageId: string) {
     const conversationItem = this.getConversation(talkid);
     this.conversationsPool.set(talkid, {
       ...conversationItem,
@@ -163,9 +155,9 @@ export class ChatGPTPool {
     try {
       // TODO: Add Retry logic
       const {
-        response,
+        text: response,
         conversationId: newConversationId,
-        messageId: newMessageId,
+        id: newMessageId,
       } = await conversation.sendMessage(message, {
         conversationId,
         parentMessageId: messageId,
