@@ -1,4 +1,4 @@
-import { ChatGPTAPI, ChatGPTAPIBrowser } from "chatgpt";
+import { ChatGPTAPI } from "chatgpt";
 
 import { config } from "./config.js";
 import AsyncRetry from "async-retry";
@@ -43,9 +43,11 @@ export class ChatGPTPool {
     if (chatGPTItem) {
       const account = chatGPTItem.account;
       try {
-        chatGPTItem.chatGpt = new ChatGPTAPIBrowser({
-          ...account,
-          proxyServer: config.openAIProxy,
+        const chatGpt = new ChatGPTAPI({
+          apiKey: config.apiKey,
+          completionParams: {
+            model: 'text-davinci-003'
+          }
         });
       } catch (err) {
         //remove this object
@@ -65,14 +67,15 @@ export class ChatGPTPool {
   async startPools() {
     const chatGPTPools = [];
     for (const account of config.chatGPTAccountPool) {
-      const chatGpt = new ChatGPTAPIBrowser({
-        ...account,
-        proxyServer: config.openAIProxy,
+      const chatGpt = new ChatGPTAPI({
+        apiKey: config.apiKey,
+        completionParams: {
+          model: 'text-davinci-003'
+        }
       });
       try {
         await AsyncRetry(
           async () => {
-            await chatGpt.initSession();
           },
           { retries: 3 }
         );
@@ -140,7 +143,7 @@ export class ChatGPTPool {
     this.conversationsPool.set(talkid, conversationItem);
     return conversationItem;
   }
-  setConversation(talkid: string, conversationId: string, messageId: string) {
+  setConversation(talkid: string, conversationId: string | undefined, messageId: string | undefined) {
     const conversationItem = this.getConversation(talkid);
     this.conversationsPool.set(talkid, {
       ...conversationItem,
@@ -163,16 +166,16 @@ export class ChatGPTPool {
     try {
       // TODO: Add Retry logic
       const {
-        response,
+        text,
         conversationId: newConversationId,
-        messageId: newMessageId,
+        parentMessageId: newMessageId,
       } = await conversation.sendMessage(message, {
         conversationId,
         parentMessageId: messageId,
       });
       // Update conversation information
       this.setConversation(talkid, newConversationId, newMessageId);
-      return response;
+      return text;
     } catch (err: any) {
       if (err.message.includes("ChatGPT failed to refresh auth token")) {
         // If refresh token failed, we will remove the conversation from pool

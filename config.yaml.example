@@ -4,3 +4,5 @@ chatGPTAccountPool:
     isGoogleLogin: false
 chatPrivateTiggerKeyword: ""
 openAIProxy: ""
+apiKey: ""
+model: text-davinci-003

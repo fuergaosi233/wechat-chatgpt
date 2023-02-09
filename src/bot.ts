@@ -68,6 +68,9 @@ export class ChatGPTBot {
   ): Promise<void> {
     const messages: Array<string> = [];
     let message = mesasge;
+    if (!message) {
+      return
+    }
     while (message.length > SINGLE_MESSAGE_MAX_SIZE) {
       messages.push(message.slice(0, SINGLE_MESSAGE_MAX_SIZE));
       message = message.slice(SINGLE_MESSAGE_MAX_SIZE);
@@ -143,7 +146,8 @@ export class ChatGPTBot {
     if (this.tiggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
-        return await this.onPrivateMessage(talker, text);
+        const botListener = talker.self() ? message.listener() || talker : talker;
+        return await this.onPrivateMessage(botListener, text);
       } else {
         return await this.onGroupMessage(talker, text, room);
       }

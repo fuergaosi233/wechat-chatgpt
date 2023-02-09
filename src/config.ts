@@ -27,6 +27,8 @@ dotenv.config();
 
 export const config: IConfig = {
   chatGPTAccountPool: configFile.chatGPTAccountPool as Array<IAccount>,
+  apiKey: configFile.apiKey,
+  model: configFile.model,
   chatGptRetryTimes: configFile.chatGptRetryTimes || 3,
   chatPrivateTiggerKeyword:
     configFile.chatPrivateTiggerKeyword ||
