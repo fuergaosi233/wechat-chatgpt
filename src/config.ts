@@ -13,7 +13,6 @@ if (fs.existsSync("./config.yaml")) {
     chatGPTAccountPool: [
       {
         email: process.env.CHAT_GPT_EMAIL,
-        password: process.env.CHAT_GPT_PASSWORD,
         apiKey: process.env.CHAT_GPT_API_KEY
       },
     ],
