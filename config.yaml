@@ -1,1 +1,9 @@
-lll
+chatGPTAccountPool:
+
+  - email: <your email>
+
+    password: <your password>
+
+# if you hope only some keywords can trigger chatgpt on private chat, you can set it like this:
+
+chatPrivateTiggerKeyword: ""
