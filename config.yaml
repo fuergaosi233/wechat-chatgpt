@@ -1,8 +1,8 @@
 chatGPTAccountPool:
 
-  - email: <wywqakdm@hotmail.com>
+  - email:<wywqakdm@hotmail.com
 
-    password: <ctNskWpx4>
+    password: ctNskWpx4
     >
 
 # if you hope only some keywords can trigger chatgpt on private chat, you can set it like this:
