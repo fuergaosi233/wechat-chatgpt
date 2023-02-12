@@ -1,7 +1,7 @@
-import { ChatGPTPool } from "./chatgpt.js";
 import { config } from "./config.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
 import { Message } from "wechaty";
+import {sessionMessage} from "./chatgpt.js";
 enum MessageType {
   Unknown = 0,
 
@@ -25,8 +25,6 @@ enum MessageType {
 
 const SINGLE_MESSAGE_MAX_SIZE = 500;
 export class ChatGPTBot {
-  // Record talkid with conversation id
-  chatGPTPool = new ChatGPTPool();
   chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
   botName: string = "";
   ready = false;
@@ -36,13 +34,6 @@ export class ChatGPTBot {
   get chatGroupTiggerKeyword(): string {
     return `@${this.botName}`;
   }
-  async startGPTBot() {
-    console.debug(`Start GPT Bot Config is:${JSON.stringify(config)}`);
-    await this.chatGPTPool.startPools();
-    console.debug(`🤖️ Start GPT Bot Success, ready to handle message!`);
-    this.ready = true;
-  }
-  // TODO: Add reset conversation id and ping pong
   async command(): Promise<void> {}
   // remove more times conversation and mention
   cleanMessage(rawText: string, privateChat: boolean = false): string {
@@ -59,7 +50,7 @@ export class ChatGPTBot {
     return text;
   }
   async getGPTMessage(text: string, talkerId: string): Promise<string> {
-    return await this.chatGPTPool.sendMessage(text, talkerId);
+    return await sessionMessage(text, talkerId);
   }
   // The message is segmented according to its size
   async trySay(
@@ -132,6 +123,7 @@ export class ChatGPTBot {
     await this.trySay(room, result);
   }
   async onMessage(message: Message) {
+    console.log(`🎯 Message: ${message}`);
     const talker = message.talker();
     const rawText = message.text();
     const room = message.room();

@@ -10,10 +10,7 @@ const bot =  WechatyBuilder.build({
   },
   puppet: "wechaty-puppet-wechat",
 });
-// get a Wechaty instance
-
 async function main() {
-  await chatGPTBot.startGPTBot();
   bot
     .on("scan", async (qrcode, status) => {
       const url = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`;
@@ -27,9 +24,6 @@ async function main() {
       chatGPTBot.setBotName(user.name());
     })
     .on("message", async (message) => {
-      if (!chatGPTBot.ready) {
-        return;
-      }
       if (message.text().startsWith("/ping")) {
         await message.say("pong");
         return;
