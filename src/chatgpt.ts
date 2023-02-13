@@ -165,7 +165,7 @@ export class ChatGPTPool {
       const {
         response,
         conversationId: newConversationId,
-        messageId: newMessageId,
+        id: newMessageId,
       } = await conversation.sendMessage(message, {
         conversationId,
         parentMessageId: messageId,
