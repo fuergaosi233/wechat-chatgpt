@@ -5,5 +5,5 @@ services:
     build: .
     volumes:
       - ./data/wechat-assistant.memory-card.json:/app/wechat-assistant.memory-card.json
-    environment:
-      - SERVER_URL=http://chatapi-single:4000
+    env_file:
+      - .env

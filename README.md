@@ -14,92 +14,63 @@
 </p>
 
 > Use ChatGPT On Wechat via wechaty  
-English | [中文文档](README_ZH.md)
+> English | [中文文档](README_ZH.md)
 
 ## 🌟 Feature
 
-- [x] Use ChatGPT On Wechat via wechaty
-- [x] Support OpenAI Accounts Pool
-- [x] Support use proxy to login
+- [x] Use ChatGPT on WeChat with [wechaty](https://github.com/wechaty/wechaty)
+  and [chatapi-single](https://github.com/bytemate/chatapi-single)
 - [x] Add conversation Support
-- [x] Add Dockerfile
+- [x] Add Dockerfile, you can use it with [docker](#use-with-docker---recommended-)
 - [x] Publish to Docker.hub
-- [x] Add Railway deploy
-- [x] Auto Reload OpenAI Accounts Pool
-- [X] Add sendmessage retry for 429/503
+- [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
+- [ ] Add Railway deploy
 
-## Use with docker
+## Use with docker(✅ Recommended)
 
 ```sh
-# Copy config file
-cp .env.example .env
-# Use your favorite editor change .env
-vim .env
-# run docker compose
-docker compose up -d
-# login with qrcode
+# pull image
+docker pull fuergaosi/wechat-chatgpt:latest
+# run container
+docker run -d --name wechat-chatgpt \
+    -e SERVER_URL=http://localhost:4000 \
+    -v $(pwd)/data:/app/data/wechat-assistant.memory-card.json \
+    fuergaosi/wechat-chatgpt:latest
+# View the QR code to log in to wechat
 docker logs -f wechat-chatgpt
 ```
 
-## Install
+## Use with docker compose(✅ Recommended)
 
 ```sh
-npm install
-```
-> NodeJS Version >= 18.0.0
-
-## Config
-
-### Copy config
-
-You need copy config file for setting up your project.
-
-```sh
+# Copy the configuration file according to the template
 cp .env.example .env
+# Edit the configuration file
+vim .env
+# Start the container
+docker-compose up -d
+# View the QR code to log in to wechat
+docker logs -f wechat-chatgpt
 ```
 
-### Get and config Openai account
+## Use with nodejs
 
-> If you don't have this OpenAI account and you live in China, you can get it [here](https://mirror.xyz/boxchen.eth/9O9CSqyKDj4BKUIil7NC1Sa1LJM-3hsPqaeW_QjfFBc).
-
-#### Use account and password
-
-The configuration file for chatapi-single can be found here: [chatapi-single](https://github.com/bytemate/chatapi-single#config)
-
-You need get OpenAI account and password.
-Your .env should be like this:
-
-```text
-# Require
-EMAIL=<your email>
-# Require
-PASSWORD=<your password>
-```
-
-⚠️ Trigger keywords must appear in the first position of the received message.
-⚠️ Pls make sure your network can log in to OpenAI, and if you fail to login in try setting up a proxy.
-
-### CAPTCHAS
-
-> The browser portions of this package use Puppeteer to automate as much as possible, including solving all CAPTCHAs. 🔥
-
-> Basic Cloudflare CAPTCHAs are handled by default, but if you want to automate the email + password Recaptchas, you'll need to sign up for one of these paid providers:
-
-> - [nopecha](https://nopecha.com/) - Uses AI to solve CAPTCHAS
->   - Faster and cheaper
->   - Set the `NOPECHA_KEY` env var to your nopecha API key
->   - [Demo video](https://user-images.githubusercontent.com/552829/208235991-de4890f2-e7ba-4b42-bf55-4fcd792d4b19.mp4) of nopecha solving the login Recaptcha (41 seconds)
-> - [2captcha](https://2captcha.com) - Uses real people to solve CAPTCHAS
->   - More well-known solution that's been around longer
->   - Set the `CAPTCHA_TOKEN` env var to your 2captcha API token
-
-So you should config `NOPECHA_KEY` or `CAPTCHA_TOKEN` in your Environment Variables.
-
-## Start Project
+> You need NodeJS 18.0.0 version and above
 
 ```sh
-npm run dev
+# Clone the project
+git clone https://github.com/fuergaosi233/wechat-chatgpt.git && cd wechat-chatgpt
+# Install dependencies
+npm install
+# Copy the configuration file according to the template
+cp .env.example .env
+# Edit the configuration file
+vim .env
+# Start project
+npm npm dev
 ```
+
+> Please make sure your WeChat account can log in [WeChat on web](https://wx.qq.com/)
 
 ## ✨ Contributor
 
@@ -107,10 +78,10 @@ npm run dev
   <img src="https://contrib.rocks/image?repo=fuergaosi233/wechat-chatgpt" />
 </a>
 
-
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/fuergaosi233/wechat-chatgpt/issues).
+Contributions, issues and feature requests are welcome!<br />Feel free to
+check [issues page](https://github.com/fuergaosi233/wechat-chatgpt/issues).
 
 ## Show your support
 
