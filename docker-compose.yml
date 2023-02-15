@@ -1,0 +1,9 @@
+version: '3'
+services:
+  wechat-chatgpt:
+    image: wechat-chatgpt
+    build: .
+    volumes:
+      - ./data/wechat-assistant.memory-card.json:/app/wechat-assistant.memory-card.json
+    environment:
+      - SERVER_URL=http://chatapi-single:4000
