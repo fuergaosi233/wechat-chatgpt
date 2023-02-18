@@ -13,6 +13,7 @@ const bot =  WechatyBuilder.build({
 // get a Wechaty instance
 
 async function main() {
+  const initializedAt = Date.now()
   await chatGPTBot.startGPTBot();
   bot
     .on("scan", async (qrcode, status) => {
@@ -27,7 +28,10 @@ async function main() {
       chatGPTBot.setBotName(user.name());
     })
     .on("message", async (message) => {
-      if (!chatGPTBot.ready) {
+      if (
+        !chatGPTBot.ready || 
+        message.date().getTime() < initializedAt
+      ) {
         return;
       }
       if (message.text().startsWith("/ping")) {
