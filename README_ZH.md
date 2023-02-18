@@ -165,6 +165,8 @@ npm run dev
 
 - **CHAT_PRIVATE_TRIGGER_KEYWORD** ：如果您希望只有一些关键字才能在私人聊天中触发 ChatGPT，则可以设置它。
 
+- **CHAT_TRIGGER_RULE** ：如果您希望正则校验通过的聊天信息才能触发 ChatGPT，则可以设置它。
+
 点击“部署”按钮，您的服务将立即开始部署。以下界面出现表示部署已经开始：
 
 ![railway-deploying](docs/images/railway-deploying.png)

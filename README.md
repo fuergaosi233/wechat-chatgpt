@@ -168,6 +168,8 @@ Some environment variables need to be configured:
 
 - **CHAT_PRIVATE_TRIGGER_KEYWORD** : If you hope only some keywords can trigger chatgpt on private chat, you can set it.
 
+- **CHAT_TRIGGER_RULE** ：If you hope only pass by a regular expression check can trigger chatgpt, you can set it
+
 Click the Deploy button and your service will start deploying shortly.The following interface appears to indicate that the deployment has begun:
 
 ![railway-deploying](docs/images/railway-deploying.png)

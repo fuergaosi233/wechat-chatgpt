@@ -3,4 +3,5 @@ chatGPTAccountPool:
     password: password
     isGoogleLogin: false
 chatPrivateTiggerKeyword: ""
+chatTiggerRule: ""
 openAIProxy: ""

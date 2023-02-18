@@ -18,6 +18,7 @@ if (fs.existsSync("./config.yaml")) {
     ],
     chatGptRetryTimes: Number(process.env.CHAT_GPT_RETRY_TIMES),
     chatPrivateTiggerKeyword: process.env.CHAT_PRIVATE_TRIGGER_KEYWORD,
+    chatTiggerRule: process.env.CHAT_TRIGGER_RULE,
     openAIProxy: process.env.OPENAI_PROXY,
     clearanceToken: process.env.CF_CLEARANCE,
     userAgent: process.env.USER_AGENT,
@@ -37,6 +38,7 @@ export const config: IConfig = {
       ""
     ) ||
     "",
+  chatTiggerRule: configFile.chatTiggerRule,
   // Support openai-js use this proxy
   openAIProxy: configFile.openAIProxy,
   clearanceToken: configFile.clearanceToken,
