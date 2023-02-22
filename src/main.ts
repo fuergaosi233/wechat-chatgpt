@@ -34,6 +34,9 @@ async function main() {
       ) {
         return;
       }
+      if(Date.now() - initializedAt < 30000){
+        return;
+      }
       if (message.text().startsWith("/ping")) {
         await message.say("pong");
         return;
