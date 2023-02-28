@@ -5,3 +5,4 @@ chatGPTAccountPool:
 chatPrivateTiggerKeyword: ""
 chatTiggerRule: ""
 openAIProxy: ""
+disableGroupMessage: false

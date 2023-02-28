@@ -170,6 +170,8 @@ Some environment variables need to be configured:
 
 - **CHAT_TRIGGER_RULE** ：If you hope only pass by a regular expression check can trigger chatgpt, you can set it
 
+- **DISABLE_GROUP_MESSAGE** ：if you do not want to trigger chatgpt in group chat, you can set it
+
 Click the Deploy button and your service will start deploying shortly.The following interface appears to indicate that the deployment has begun:
 
 ![railway-deploying](docs/images/railway-deploying.png)

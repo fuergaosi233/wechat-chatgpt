@@ -29,6 +29,7 @@ export class ChatGPTBot {
   chatGPTPool = new ChatGPTPool();
   chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
   chatTiggerRule = config.chatTiggerRule? new RegExp(config.chatTiggerRule): undefined;
+  disableGroupMessage = config.disableGroupMessage || false;
   botName: string = "";
   ready = false;
   setBotName(botName: string) {
@@ -161,8 +162,12 @@ export class ChatGPTBot {
       const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
         return await this.onPrivateMessage(talker, text);
-      } else {
-        return await this.onGroupMessage(talker, text, room);
+      } else{
+        if (!this.disableGroupMessage){
+          return await this.onGroupMessage(talker, text, room);
+        } else {
+          return;
+        }
       }
     } else {
       return;

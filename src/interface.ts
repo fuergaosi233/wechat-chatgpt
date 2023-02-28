@@ -25,6 +25,7 @@ export interface IConfig {
   chatPrivateTiggerKeyword: string;
   chatTiggerRule?: string;
   openAIProxy?: string;
+  disableGroupMessage?: boolean;
   clearanceToken: string;
   userAgent: string;
 }

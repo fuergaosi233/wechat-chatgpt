@@ -167,6 +167,9 @@ npm run dev
 
 - **CHAT_TRIGGER_RULE** ：如果您希望正则校验通过的聊天信息才能触发 ChatGPT，则可以设置它。
 
+- **DISABLE_GROUP_MESSAGE** ：如果您不希望群聊消息触发 ChatGPT，则可以设置它。
+
+
 点击“部署”按钮，您的服务将立即开始部署。以下界面出现表示部署已经开始：
 
 ![railway-deploying](docs/images/railway-deploying.png)
