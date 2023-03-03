@@ -320,3 +320,5 @@ config.json
 cache.json
 config.yaml
 .vscode
+
+data/

@@ -33,9 +33,13 @@
 docker pull fuergaosi/wechat-chatgpt:latest
 # run container
 docker run -d --name wechat-chatgpt \
+<<<<<<< HEAD
     -e OPENAI_API_KEY=<YOUR OPENAI API KEY> \
     -e MODEL="gpt-3.5-turbo" \
     -e CHAT_PRIVATE_TRIGGER_KEYWORD="" \
+=======
+    -e SERVER_URL=http://localhost:4000 \
+>>>>>>> origin/chatgpt-api
     -v $(pwd)/data:/app/data/wechat-assistant.memory-card.json \
     fuergaosi/wechat-chatgpt:latest
 # View the QR code to log in to wechat
