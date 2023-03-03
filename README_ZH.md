@@ -23,7 +23,6 @@
 - [x] 发布到 Docker.hub
 - [x] 使用[docker compose](#通过docker-compose使用-推荐)进行部署
 - [ ] 通过 Railway 进行部署
--
 
 ## 通过Docker使用（✅ 推荐）
 

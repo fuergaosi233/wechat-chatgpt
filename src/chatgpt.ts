@@ -29,4 +29,5 @@ const sendMessage = async (message: string) => {
     return "Something went wrong"
   }
 }
+
 export {sendMessage};
