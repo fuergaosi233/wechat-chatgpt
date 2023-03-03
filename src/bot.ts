@@ -1,7 +1,7 @@
-import { ChatGPTPool } from "./chatgpt.js";
 import { config } from "./config.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
 import { Message } from "wechaty";
+import {sendMessage} from "./chatgpt.js";
 enum MessageType {
   Unknown = 0,
 
@@ -25,8 +25,6 @@ enum MessageType {
 
 const SINGLE_MESSAGE_MAX_SIZE = 500;
 export class ChatGPTBot {
-  // Record talkid with conversation id
-  chatGPTPool = new ChatGPTPool();
   chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
   chatTiggerRule = config.chatTiggerRule? new RegExp(config.chatTiggerRule): undefined;
   disableGroupMessage = config.disableGroupMessage || false;
@@ -46,13 +44,6 @@ export class ChatGPTBot {
     }
     return regEx
   }
-  async startGPTBot() {
-    console.debug(`Start GPT Bot Config is:${JSON.stringify(config)}`);
-    await this.chatGPTPool.startPools();
-    console.debug(`🤖️ Start GPT Bot Success, ready to handle message!`);
-    this.ready = true;
-  }
-  // TODO: Add reset conversation id and ping pong
   async command(): Promise<void> {}
   // remove more times conversation and mention
   cleanMessage(rawText: string, privateChat: boolean = false): string {
@@ -73,8 +64,8 @@ export class ChatGPTBot {
     // remove more text via - - - - - - - - - - - - - - -
     return text
   }
-  async getGPTMessage(text: string, talkerId: string): Promise<string> {
-    return await this.chatGPTPool.sendMessage(text, talkerId);
+  async getGPTMessage(text: string): Promise<string> {
+    return await sendMessage(text);
   }
   // The message is segmented according to its size
   async trySay(
@@ -135,7 +126,7 @@ export class ChatGPTBot {
 
   async onPrivateMessage(talker: ContactInterface, text: string) {
     const talkerId = talker.id;
-    const gptMessage = await this.getGPTMessage(text, talkerId);
+    const gptMessage = await this.getGPTMessage(text);
     await this.trySay(talker, gptMessage);
   }
 
@@ -145,11 +136,12 @@ export class ChatGPTBot {
     room: RoomInterface
   ) {
     const talkerId = room.id + talker.id;
-    const gptMessage = await this.getGPTMessage(text, talkerId);
+    const gptMessage = await this.getGPTMessage(text);
     const result = `${text}\n ------\n ${gptMessage}`;
     await this.trySay(room, result);
   }
   async onMessage(message: Message) {
+    console.log(`🎯 Message: ${message}`);
     const talker = message.talker();
     const rawText = message.text();
     const room = message.room();
