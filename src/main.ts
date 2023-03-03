@@ -5,16 +5,9 @@ const chatGPTBot = new ChatGPTBot();
 
 const bot =  WechatyBuilder.build({
   name: "wechat-assistant", // generate xxxx.memory-card.json and save login data for the next login
-  puppetOptions: {
-    uos: true, // 开启uos协议
-  },
-  puppet: "wechaty-puppet-wechat",
 });
-// get a Wechaty instance
-
 async function main() {
   const initializedAt = Date.now()
-  await chatGPTBot.startGPTBot();
   bot
     .on("scan", async (qrcode, status) => {
       const url = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`;
