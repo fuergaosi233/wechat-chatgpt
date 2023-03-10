@@ -1,8 +1,0 @@
-chatGPTAccountPool:
-  - email: email
-    password: password
-    isGoogleLogin: false
-chatPrivateTiggerKeyword: ""
-chatTiggerRule: ""
-openAIProxy: ""
-disableGroupMessage: false
