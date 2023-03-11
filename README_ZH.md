@@ -28,14 +28,14 @@
 
 ```sh
 # 拉取镜像
-docker pull fuergaosi/wechat-chatgpt:latest
+docker pull holegots/wechat-chatgpt:latest
 # 运行容器
 docker run -it --name wechat-chatgpt \
     -e OPENAI_API_KEY=<YOUR OPENAI API KEY> \
     -e MODEL="gpt-3.5-turbo" \
     -e CHAT_PRIVATE_TRIGGER_KEYWORD="" \
     -v $(pwd)/data:/app/data/wechat-assistant.memory-card.json \
-    fuergaosi/wechat-chatgpt:latest
+    holegots/wechat-chatgpt:latest
 # 使用二维码登陆
 docker logs -f wechat-chatgpt
 ```
