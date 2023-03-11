@@ -15,6 +15,8 @@
 > 在微信上迅速接入 ChatGPT，让它成为你最好的助手！  
 > [English](README.md) | 中文文档
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dMLG70?referralCode=bIYugQ)
+
 ## 🌟 功能点
 
 - [x] 通过 [wechaty](https://github.com/wechaty/wechaty) 和 [官方 API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)，将 ChatGPT 接入微信
@@ -22,7 +24,16 @@
 - [x] 加入 Dockerfile, 通过 [Docker](#通过docker使用-推荐) 进行部署
 - [x] 发布到 Docker.hub
 - [x] 使用[docker compose](#通过docker-compose使用-推荐)进行部署
-- [ ] 通过 Railway 进行部署
+- [x] 通过 Railway 进行部署
+
+## 使用Railway进行部署(✅ 推荐)
+
+1. 点击 [Railway](https://railway.app/template/dMLG70?referralCode=bIYugQ) 按钮，进入 Railway 部署页面
+2. 点击 `Deploy Now` 按钮，进入 Railway 部署页面
+3. 填写 仓库名称和 `OPENAI_API_KEY`(需要连接 GitHub 账号)
+4. 点击 `Deploy` 按钮
+5. 点击 `View Logs` 按钮，等待部署完成
+
 
 ## 通过Docker使用（✅ 推荐）
 
@@ -39,6 +50,7 @@ docker run -it --name wechat-chatgpt \
 # 使用二维码登陆
 docker logs -f wechat-chatgpt
 ```
+> 如何获取 OPENAI API KEY？请参考 [OpenAI API](https://platform.openai.com/account/api-keys)。
 
 ## 通过docker compose使用（✅ 推荐）
 

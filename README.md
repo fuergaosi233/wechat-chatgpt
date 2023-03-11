@@ -16,6 +16,8 @@
 > Use ChatGPT On Wechat via wechaty  
 > English | [中文文档](README_ZH.md)
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dMLG70?referralCode=bIYugQ)
+
 ## 🌟 Feature
 
 - [x] Use ChatGPT on WeChat with [wechaty](https://github.com/wechaty/wechaty)
@@ -24,13 +26,21 @@
 - [x] Add Dockerfile, you can use it with [docker](#use-with-docker---recommended-)
 - [x] Publish to Docker.hub
 - [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
-- [ ] Add Railway deploy
+- [x] Add Railway deploy
+
+## Deployment with Railway (✅Recommended)
+
+1. Click the [Railway](https://railway.app/template/dMLG70?referralCode=bIYugQ) button to go to the Railway deployment page
+2. Click the `Deploy Now` button to enter the Railway deployment page
+3. Fill in the repository name and `OPENAI_API_KEY` (need to link GitHub account)
+4. Click the `Deploy` button
+5. Click the `View Logs` button and wait for the deployment to complete
 
 ## Use with docker(✅ Recommended)
 
 ```sh
 # pull image
-holegots/wechat-chatgpt
+docker pull holegots/wechat-chatgpt
 # run container
 docker run -d --name wechat-chatgpt \
     -e OPENAI_API_KEY=<YOUR OPENAI API KEY> \
@@ -41,6 +51,7 @@ docker run -d --name wechat-chatgpt \
 # View the QR code to log in to wechat
 docker logs -f wechat-chatgpt
 ```
+> How to get OPENAI API KEY? [Click here](https://platform.openai.com/account/api-keys)
 
 ## Use with docker compose(✅ Recommended)
 
