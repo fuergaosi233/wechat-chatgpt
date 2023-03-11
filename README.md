@@ -28,16 +28,25 @@
 - [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
 - [x] Add Railway deploy
 
-## Use with Railway (✅Recommended)
+## 🚀 Usage
+- [Use with Railway](#use-with-railway)(PaaS, Free, Stable, ✅Recommended)
+- [Use with Fly.io](#use-with-flyio)(Paas, Free, ✅Recommended)
+- [Use with docker](#use-with-docker)(Self-hosted, Stable, ✅Recommended)
+- [Use with docker compose](#use-with-docker-compose)(Self-hosted, Stable, ✅Recommended)
+- [Use with nodejs](#use-with-nodejs)(Self-hosted)
 
+## Use with Railway
+> Railway offers $5 or 500 hours of runtime per month
 1. Click the [Railway](https://railway.app/template/dMLG70?referralCode=bIYugQ) button to go to the Railway deployment page
 2. Click the `Deploy Now` button to enter the Railway deployment page
 3. Fill in the repository name and `OPENAI_API_KEY` (need to link GitHub account)
 4. Click the `Deploy` button
 5. Click the `View Logs` button and wait for the deployment to complete
 
-## Use with Fly.io(✅ Recommended)
+## Use with Fly.io
+> Please allocate 512MB memory for the application to meet the application requirements
 
+> fly.io offers free bills up to $5(Free Allowances 3 256MB are not included in the bill)
 1. Install [flyctl](https://fly.io/docs/getting-started/installing-flyctl/)
    ```shell
     # macOS
@@ -70,7 +79,7 @@
    ```
 
 
-## Use with docker(✅ Recommended)
+## Use with docker
 
 ```sh
 # pull image
@@ -87,7 +96,7 @@ docker logs -f wechat-chatgpt
 ```
 > How to get OPENAI API KEY? [Click here](https://platform.openai.com/account/api-keys)
 
-## Use with docker compose(✅ Recommended)
+## Use with docker compose
 
 ```sh
 # Copy the configuration file according to the template
