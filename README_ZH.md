@@ -34,6 +34,37 @@
 4. 点击 `Deploy` 按钮
 5. 点击 `View Logs` 按钮，等待部署完成
 
+## 通过Fly.io进行部署(✅ 推荐)
+1. 安装 [flyctl](https://fly.io/docs/getting-started/installing-flyctl/)
+   ```shell
+    # macOS
+    brew install flyctl
+    # Windows
+    scoop install flyctl
+    # Linux
+    curl https://fly.io/install.sh | sh
+   ```
+2. 克隆项目并进入项目目录
+   ```shell
+   git clone https://github.com/fuergaosi233/wechat-chatgpt.git && cd wechat-chatgpt
+   ```
+3. 创建应用
+   ```shell
+   ➜ flyctl launch 
+    ? Would you like to copy its configuration to the new app? No
+    ? App Name (leave blank to use an auto-generated name): <YOUR APP NAME>
+    ? Select region: <YOUR CHOOSE REGION>
+    ? Would you like to setup a Postgresql database now? No
+    ? Would you like to deploy now? No
+   ```
+4. 配置环境变量
+   ```shell
+   flyctl secrets set OPENAI_API_KEY="<YOUR OPENAI API KEY>" MODEL="<CHATGPT-MODEL>"
+   ```
+5. 部署应用
+   ```shell
+   flyctl deploy
+   ```
 
 ## 通过Docker使用（✅ 推荐）
 
