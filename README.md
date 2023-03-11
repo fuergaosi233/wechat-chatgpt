@@ -28,13 +28,47 @@
 - [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
 - [x] Add Railway deploy
 
-## Deployment with Railway (✅Recommended)
+## Use with Railway (✅Recommended)
 
 1. Click the [Railway](https://railway.app/template/dMLG70?referralCode=bIYugQ) button to go to the Railway deployment page
 2. Click the `Deploy Now` button to enter the Railway deployment page
 3. Fill in the repository name and `OPENAI_API_KEY` (need to link GitHub account)
 4. Click the `Deploy` button
 5. Click the `View Logs` button and wait for the deployment to complete
+
+## Use with Fly.io(✅ Recommended)
+
+1. Install [flyctl](https://fly.io/docs/getting-started/installing-flyctl/)
+   ```shell
+    # macOS
+    brew install flyctl
+    # Windows
+    scoop install flyctl
+    # Linux
+    curl https://fly.io/install.sh | sh
+   ```
+2. Clone the project and enter the project directory
+   ```shell
+   git clone https://github.com/fuergaosi233/wechat-chatgpt.git && cd wechat-chatgpt
+   ```
+3. Create a new app
+   ```shell
+   ➜ flyctl launch 
+    ? Would you like to copy its configuration to the new app? No
+    ? App Name (leave blank to use an auto-generated name): <YOUR APP NAME>
+    ? Select region: <YOUR CHOOSE REGION>
+    ? Would you like to setup a Postgresql database now? No
+    ? Would you like to deploy now? No
+   ```
+4. Configure the environment variables
+   ```shell
+   flyctl secrets set OPENAI_API_KEY="<YOUR OPENAI API KEY>" MODEL="<CHATGPT-MODEL>"
+   ```
+5. Deploy the app
+   ```shell
+   flyctl deploy
+   ```
+
 
 ## Use with docker(✅ Recommended)
 

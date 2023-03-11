@@ -313,6 +313,8 @@ cython_debug/
 # Poetry local configuration file - https://python-poetry.org/docs/configuration/#local-configuration
 poetry.toml
 
+docs/
+
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 n
