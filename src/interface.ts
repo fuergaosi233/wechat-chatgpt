@@ -4,4 +4,5 @@ export interface IConfig {
   chatPrivateTiggerKeyword: string;
   chatTiggerRule: string;
   disableGroupMessage: boolean;
+  requestProxy: string;
 }

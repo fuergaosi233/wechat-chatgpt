@@ -9,4 +9,5 @@ export const config: IConfig = {
   chatPrivateTiggerKeyword: process.env.CHAT_PRIVATE_TRIGGER_KEYWORD || "",
   chatTiggerRule: process.env.CHAT_TRIGGER_RULE || "",
   disableGroupMessage: process.env.DISABLE_GROUP_MESSAGE === "true",
+  requestProxy: process.env.REQUEST_PROXY || ""
 };
