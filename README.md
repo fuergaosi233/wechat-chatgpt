@@ -16,6 +16,8 @@
 > Use ChatGPT On Wechat via wechaty  
 > English | [中文文档](README_ZH.md)
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dMLG70?referralCode=bIYugQ)
+
 ## 🌟 Feature
 
 - [x] Use ChatGPT on WeChat with [wechaty](https://github.com/wechaty/wechaty)
@@ -24,25 +26,77 @@
 - [x] Add Dockerfile, you can use it with [docker](#use-with-docker---recommended-)
 - [x] Publish to Docker.hub
 - [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
-- [ ] Add Railway deploy
+- [x] Add Railway deploy
 
-## Use with docker(✅ Recommended)
+## 🚀 Usage
+- [Use with Railway](#use-with-railway)(PaaS, Free, Stable, ✅Recommended)
+- [Use with Fly.io](#use-with-flyio)(Paas, Free, ✅Recommended)
+- [Use with docker](#use-with-docker)(Self-hosted, Stable, ✅Recommended)
+- [Use with docker compose](#use-with-docker-compose)(Self-hosted, Stable, ✅Recommended)
+- [Use with nodejs](#use-with-nodejs)(Self-hosted)
+
+## Use with Railway
+> Railway offers $5 or 500 hours of runtime per month
+1. Click the [Railway](https://railway.app/template/dMLG70?referralCode=bIYugQ) button to go to the Railway deployment page
+2. Click the `Deploy Now` button to enter the Railway deployment page
+3. Fill in the repository name and `OPENAI_API_KEY` (need to link GitHub account)
+4. Click the `Deploy` button
+5. Click the `View Logs` button and wait for the deployment to complete
+
+## Use with Fly.io
+> Please allocate 512MB memory for the application to meet the application requirements
+
+> fly.io offers free bills up to $5(Free Allowances 3 256MB are not included in the bill)
+1. Install [flyctl](https://fly.io/docs/getting-started/installing-flyctl/)
+   ```shell
+    # macOS
+    brew install flyctl
+    # Windows
+    scoop install flyctl
+    # Linux
+    curl https://fly.io/install.sh | sh
+   ```
+2. Clone the project and enter the project directory
+   ```shell
+   git clone https://github.com/fuergaosi233/wechat-chatgpt.git && cd wechat-chatgpt
+   ```
+3. Create a new app
+   ```shell
+   ➜ flyctl launch 
+    ? Would you like to copy its configuration to the new app? No
+    ? App Name (leave blank to use an auto-generated name): <YOUR APP NAME>
+    ? Select region: <YOUR CHOOSE REGION>
+    ? Would you like to setup a Postgresql database now? No
+    ? Would you like to deploy now? No
+   ```
+4. Configure the environment variables
+   ```shell
+   flyctl secrets set OPENAI_API_KEY="<YOUR OPENAI API KEY>" MODEL="<CHATGPT-MODEL>"
+   ```
+5. Deploy the app
+   ```shell
+   flyctl deploy
+   ```
+
+
+## Use with docker
 
 ```sh
 # pull image
-docker pull fuergaosi/wechat-chatgpt:latest
+docker pull holegots/wechat-chatgpt
 # run container
 docker run -d --name wechat-chatgpt \
     -e OPENAI_API_KEY=<YOUR OPENAI API KEY> \
     -e MODEL="gpt-3.5-turbo" \
     -e CHAT_PRIVATE_TRIGGER_KEYWORD="" \
     -v $(pwd)/data:/app/data/wechat-assistant.memory-card.json \
-    fuergaosi/wechat-chatgpt:latest
+    holegots/wechat-chatgpt:latest
 # View the QR code to log in to wechat
 docker logs -f wechat-chatgpt
 ```
+> How to get OPENAI API KEY? [Click here](https://platform.openai.com/account/api-keys)
 
-## Use with docker compose(✅ Recommended)
+## Use with docker compose
 
 ```sh
 # Copy the configuration file according to the template
@@ -73,6 +127,19 @@ npm npm dev
 ```
 
 > Please make sure your WeChat account can log in [WeChat on web](https://wx.qq.com/)
+
+## 📝 Environment Variables
+
+| name                         | default       | example                                        | description                                                                                                                                                                          |
+|------------------------------|---------------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| OPENAI_API_KEY               | 123456789     | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [create new secret key](https://platform.openai.com/account/api-keys)                                                                                                                |
+| MODEL                        | gpt-3.5-turbo |                                                | ID of the model to use. Currently, only gpt-3.5-turbo and gpt-3.5-turbo-0301 are supported.                                                                                          |
+| TEMPERATURE                  | 0.6           |                                                | What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. |
+| CHAT_TRIGGER_RULE            |               |                                                |                                                                                                                                                                                      |
+| DISABLE_GROUP_MESSAGE        | true          |                                                |                                                                                                                                                                                      |
+| CHAT_PRIVATE_TRIGGER_KEYWORD |               |                                                | Keyword to trigger ChatGPT reply in WeChat private chat                                                                                                                              |
+| BLOCK_WORDS                  |               | "WORD1,WORD2,WORD3"                            | Chat blocker words, (works for both private and group chats, Use, Split)                                                                                                             |
+| CHATGPT_BLOCK_WORDS          |               | "WORD1,WORD2,WORD3"                            | The blocked words returned by ChatGPT(works for both private and group chats, Use, Split)                                                                                            |
 
 ## ✨ Contributor
 
