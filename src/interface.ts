@@ -4,4 +4,7 @@ export interface IConfig {
   chatPrivateTiggerKeyword: string;
   chatTiggerRule: string;
   disableGroupMessage: boolean;
+  temperature: number;
+  blockWords: string[];
+  chatgptBlockWords: string[];
 }

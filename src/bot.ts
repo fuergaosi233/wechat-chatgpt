@@ -67,12 +67,23 @@ export class ChatGPTBot {
   async getGPTMessage(text: string): Promise<string> {
     return await sendMessage(text);
   }
+  // Check if the message returned by chatgpt contains masked words]
+  checkChatGPTBlockWords(message: string): boolean {
+    if (config.chatgptBlockWords.length == 0) {
+      return false;
+    }
+    return config.chatgptBlockWords.some((word) => message.includes(word));
+  }
   // The message is segmented according to its size
   async trySay(
     talker: RoomInterface | ContactInterface,
     mesasge: string
   ): Promise<void> {
     const messages: Array<string> = [];
+    if (this.checkChatGPTBlockWords(mesasge)) {
+      console.log(`🚫 Blocked ChatGPT: ${mesasge}`);
+      return;
+    }
     let message = mesasge;
     while (message.length > SINGLE_MESSAGE_MAX_SIZE) {
       messages.push(message.slice(0, SINGLE_MESSAGE_MAX_SIZE));
@@ -102,6 +113,13 @@ export class ChatGPTBot {
     }
     return triggered;
   }
+  // Check whether the message contains the blocked words. if so, the message will be ignored. if so, return true
+  checkBlockWords(message: string): boolean {
+    if (config.blockWords.length == 0) {
+      return false;
+    }
+    return config.blockWords.some((word) => message.includes(word));
+  }
   // Filter out the message that does not need to be processed
   isNonsense(
     talker: ContactInterface,
@@ -120,12 +138,13 @@ export class ChatGPTBot {
       // Transfer message
       text.includes("收到转账，请在手机上查看") ||
       // 位置消息
-      text.includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg")
+      text.includes("/cgi-bin/mmwebwx-bin/webwxgetpubliclinkimg") ||
+      // 聊天屏蔽词
+      this.checkBlockWords(text)
     );
   }
 
   async onPrivateMessage(talker: ContactInterface, text: string) {
-    const talkerId = talker.id;
     const gptMessage = await this.getGPTMessage(text);
     await this.trySay(talker, gptMessage);
   }

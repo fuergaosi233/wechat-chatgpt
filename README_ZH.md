@@ -19,7 +19,8 @@
 
 ## 🌟 功能点
 
-- [x] 通过 [wechaty](https://github.com/wechaty/wechaty) 和 [官方 API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)，将 ChatGPT 接入微信
+- [x] 通过 [wechaty](https://github.com/wechaty/wechaty)
+  和 [官方 API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)，将 ChatGPT 接入微信
 - [x] 加入了持续对话的功能
 - [x] 加入 Dockerfile, 通过 [Docker](#通过docker使用-推荐) 进行部署
 - [x] 发布到 Docker.hub
@@ -27,6 +28,7 @@
 - [x] 通过 Railway 进行部署
 
 ## 🚀 使用
+
 - [在 Railway 部署](#使用railway进行部署)(PaaS, 免费, 稳定, ✅推荐)
 - [在 Fly.io 部署](#通过flyio进行部署)(PaaS, 免费, ✅推荐)
 - [使用 Docker 部署](#通过docker使用)(自托管, 稳定, ✅推荐)
@@ -34,7 +36,9 @@
 - [使用 NodeJS 部署](#使用nodejs运行)
 
 ## 使用Railway进行部署
+
 > Railway 是一个免费的 PaaS 平台，5刀以内的账单免费或者每个月500小时的运行时间
+
 1. 点击 [Railway](https://railway.app/template/dMLG70?referralCode=bIYugQ) 按钮，进入 Railway 部署页面
 2. 点击 `Deploy Now` 按钮，进入 Railway 部署页面
 3. 填写 仓库名称和 `OPENAI_API_KEY`(需要连接 GitHub 账号)
@@ -42,9 +46,11 @@
 5. 点击 `View Logs` 按钮，等待部署完成
 
 ## 通过Fly.io进行部署
+
 > 请为应用程序分配 512 MB 内存，否则可能会出现内存溢出
 
-> Fly.io 5刀以内的账单免费(免费计划的3个256MB的应用不在账单内)也就是可以同时可以部署 `1*512MB + 3*256MB` 
+> Fly.io 5刀以内的账单免费(免费计划的3个256MB的应用不在账单内)也就是可以同时可以部署 `1*512MB + 3*256MB`
+
 1. 安装 [flyctl](https://fly.io/docs/getting-started/installing-flyctl/)
    ```shell
     # macOS
@@ -91,6 +97,7 @@ docker run -it --name wechat-chatgpt \
 # 使用二维码登陆
 docker logs -f wechat-chatgpt
 ```
+
 > 如何获取 OPENAI API KEY？请参考 [OpenAI API](https://platform.openai.com/account/api-keys)。
 
 ## 通过docker compose使用
@@ -107,7 +114,9 @@ docker logs -f wechat-chatgpt
 ```
 
 ## 使用NodeJS运行
+
 > 请确认安装的NodeJS版本为18.0.0以上
+
 ```sh
 # 克隆项目
 git clone https://github.com/fuergaosi233/wechat-chatgpt.git && cd wechat-chatgpt
@@ -120,8 +129,21 @@ vim .env # 使用你喜欢的文本编辑器修改配置文件
 npm run dev
 # 如果您是初次登陆，那么需要扫描二维码
 ```
+
 > 请确保您的账号可以登陆 [网页版微信](https://wx.qq.com/)。
 
+## 📝 Environment Variables
+
+| name                         | default       | example                                        | description                                                 |
+|------------------------------|---------------|------------------------------------------------|-------------------------------------------------------------|
+| OPENAI_API_KEY               | 123456789     | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [创建你的 API 密钥](https://platform.openai.com/account/api-keys) |
+| MODEL                        | gpt-3.5-turbo |                                                | 要使用的模型ID, 目前仅支持`gpt-3.5-turbo` 和 `gpt-3.5-turbo-0301`       |
+| TEMPERATURE                  | 0.6           |                                                | 在0和2之间。较高的数值如0.8会使 ChatGPT 输出更加随机，而较低的数值如0.2会使其更加稳定。        |
+| CHAT_TRIGGER_RULE            |               |                                                |                                                             |
+| DISABLE_GROUP_MESSAGE        | true          |                                                |                                                             |
+| CHAT_PRIVATE_TRIGGER_KEYWORD |               |                                                | 在私聊中触发ChatGPT的关键词, 默认是无需关键词即可触发                             |
+| BLOCK_WORDS                  |               | "WORD1,WORD2,WORD3"                            | 聊天屏蔽关键词(同时在群组和私聊中生效, 避免 bot 用户恶意提问导致封号                      |
+| CHATGPT_BLOCK_WORDS          |               | "WORD1,WORD2,WORD3"                            | ChatGPT回复屏蔽词, 如果ChatGPT的回复中包含了屏蔽词, 则不回复                     |
 
 ## ✨ Contributor
 
@@ -131,7 +153,8 @@ npm run dev
 
 ## 🤝 为项目添砖加瓦
 
-欢迎提出 Contributions, issues 与 feature requests!<br />随时查看 [issues page](https://github.com/fuergaosi233/wechat-chatgpt/issues).
+欢迎提出 Contributions, issues 与 feature requests!<br />
+随时查看 [issues page](https://github.com/fuergaosi233/wechat-chatgpt/issues).
 
 ## 感谢支持 🙏
 

@@ -128,6 +128,19 @@ npm npm dev
 
 > Please make sure your WeChat account can log in [WeChat on web](https://wx.qq.com/)
 
+## 📝 Environment Variables
+
+| name                         | default       | example                                        | description                                                                                                                                                                          |
+|------------------------------|---------------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| OPENAI_API_KEY               | 123456789     | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [create new secret key](https://platform.openai.com/account/api-keys)                                                                                                                |
+| MODEL                        | gpt-3.5-turbo |                                                | ID of the model to use. Currently, only gpt-3.5-turbo and gpt-3.5-turbo-0301 are supported.                                                                                          |
+| TEMPERATURE                  | 0.6           |                                                | What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. |
+| CHAT_TRIGGER_RULE            |               |                                                |                                                                                                                                                                                      |
+| DISABLE_GROUP_MESSAGE        | true          |                                                |                                                                                                                                                                                      |
+| CHAT_PRIVATE_TRIGGER_KEYWORD |               |                                                | Keyword to trigger ChatGPT reply in WeChat private chat                                                                                                                              |
+| BLOCK_WORDS                  |               | "WORD1,WORD2,WORD3"                            | Chat blocker words, (works for both private and group chats, Use, Split)                                                                                                             |
+| CHATGPT_BLOCK_WORDS          |               | "WORD1,WORD2,WORD3"                            | The blocked words returned by ChatGPT(works for both private and group chats, Use, Split)                                                                                            |
+
 ## ✨ Contributor
 
 <a href="https://github.com/fuergaosi233/wechat-chatgpt/graphs/contributors">
