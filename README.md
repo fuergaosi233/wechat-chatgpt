@@ -123,7 +123,7 @@ cp .env.example .env
 # Edit the configuration file
 vim .env
 # Start project
-npm npm dev
+npm run dev
 ```
 
 > Please make sure your WeChat account can log in [WeChat on web](https://wx.qq.com/)
