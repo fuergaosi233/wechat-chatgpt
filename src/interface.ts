@@ -1,4 +1,5 @@
 export interface IConfig {
+  api: string;
   openai_api_key: string;
   model: string;
   chatPrivateTiggerKeyword: string;

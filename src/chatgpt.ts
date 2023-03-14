@@ -1,11 +1,12 @@
 import {config} from "./config.js";
 
+let api = config.api;
 let apiKey = config.openai_api_key;
 let model = config.model;
 let temperature = config.temperature;
 const sendMessage = async (message: string) => {
   try {
-    const response = await fetch(`https://api.openai.com/v1/chat/completions`, {
+    const response = await fetch(`${api}/v1/chat/completions`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
