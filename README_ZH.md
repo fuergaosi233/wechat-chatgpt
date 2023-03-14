@@ -26,6 +26,9 @@
 - [x] 发布到 Docker.hub
 - [x] 使用[docker compose](#通过docker-compose使用-推荐)进行部署
 - [x] 通过 Railway 进行部署
+- [x] 通过 Fly.io 进行部署
+- [x] 支持自定义ChatGPT API
+- [ ] 支持代理
 
 ## 🚀 使用
 
@@ -134,16 +137,34 @@ npm run dev
 
 ## 📝 Environment Variables
 
-| name                         | default       | example                                        | description                                                 |
-|------------------------------|---------------|------------------------------------------------|-------------------------------------------------------------|
-| OPENAI_API_KEY               | 123456789     | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [创建你的 API 密钥](https://platform.openai.com/account/api-keys) |
-| MODEL                        | gpt-3.5-turbo |                                                | 要使用的模型ID, 目前仅支持`gpt-3.5-turbo` 和 `gpt-3.5-turbo-0301`       |
-| TEMPERATURE                  | 0.6           |                                                | 在0和2之间。较高的数值如0.8会使 ChatGPT 输出更加随机，而较低的数值如0.2会使其更加稳定。        |
-| CHAT_TRIGGER_RULE            |               |                                                |                                                             |
-| DISABLE_GROUP_MESSAGE        | true          |                                                |                                                             |
-| CHAT_PRIVATE_TRIGGER_KEYWORD |               |                                                | 在私聊中触发ChatGPT的关键词, 默认是无需关键词即可触发                             |
-| BLOCK_WORDS                  |               | "WORD1,WORD2,WORD3"                            | 聊天屏蔽关键词(同时在群组和私聊中生效, 避免 bot 用户恶意提问导致封号                      |
-| CHATGPT_BLOCK_WORDS          |               | "WORD1,WORD2,WORD3"                            | ChatGPT回复屏蔽词, 如果ChatGPT的回复中包含了屏蔽词, 则不回复                     |
+| name                         | default                | example                                        | description                                                 |
+|------------------------------|------------------------|------------------------------------------------|-------------------------------------------------------------|
+| API                          | https://api.openai.com | ChatGPT API 地址                                 |
+| OPENAI_API_KEY               | 123456789              | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [创建你的 API 密钥](https://platform.openai.com/account/api-keys) |
+| MODEL                        | gpt-3.5-turbo          |                                                | 要使用的模型ID, 目前仅支持`gpt-3.5-turbo` 和 `gpt-3.5-turbo-0301`       |
+| TEMPERATURE                  | 0.6                    |                                                | 在0和2之间。较高的数值如0.8会使 ChatGPT 输出更加随机，而较低的数值如0.2会使其更加稳定。        |
+| CHAT_TRIGGER_RULE            |                        |                                                |                                                             |
+| DISABLE_GROUP_MESSAGE        | true                   |                                                |                                                             |
+| CHAT_PRIVATE_TRIGGER_KEYWORD |                        |                                                | 在私聊中触发ChatGPT的关键词, 默认是无需关键词即可触发                             |
+| BLOCK_WORDS                  |                        | "WORD1,WORD2,WORD3"                            | 聊天屏蔽关键词(同时在群组和私聊中生效, 避免 bot 用户恶意提问导致封号                      |
+| CHATGPT_BLOCK_WORDS          |                        | "WORD1,WORD2,WORD3"                            | ChatGPT回复屏蔽词, 如果ChatGPT的回复中包含了屏蔽词, 则不回复                     |
+
+
+## 📝 使用自定义ChatGPT API
+> https://github.com/fuergaosi233/openai-proxy
+```shell
+# 克隆项目
+git clone https://github.com/fuergaosi233/openai-proxy
+# 安装依赖
+npm install && npm install -g wrangler && npm run build
+# 部署到 CloudFlare Workers
+npm run deploy
+# 自定义域名(可选)
+添加 `Route`` 到 `wrangler.toml`
+routes = [
+	{ pattern = "Your Custom Domain", custom_domain = true },
+]
+```
 
 ## ✨ Contributor
 
