@@ -25,22 +25,22 @@ enum MessageType {
 
 const SINGLE_MESSAGE_MAX_SIZE = 500;
 export class ChatGPTBot {
-  chatPrivateTiggerKeyword = config.chatPrivateTiggerKeyword;
-  chatTiggerRule = config.chatTiggerRule? new RegExp(config.chatTiggerRule): undefined;
+  chatPrivateTriggerKeyword = config.chatPrivateTriggerKeyword;
+  chatTriggerRule = config.chatTriggerRule? new RegExp(config.chatTriggerRule): undefined;
   disableGroupMessage = config.disableGroupMessage || false;
   botName: string = "";
   ready = false;
   setBotName(botName: string) {
     this.botName = botName;
   }
-  get chatGroupTiggerRegEx(): RegExp {
+  get chatGroupTriggerRegEx(): RegExp {
     return new RegExp(`^@${this.botName}\\s`);
   }
-  get chatPrivateTiggerRule(): RegExp | undefined {
-    const { chatPrivateTiggerKeyword, chatTiggerRule } = this;
-    let regEx = chatTiggerRule
-    if (!regEx && chatPrivateTiggerKeyword) {
-      regEx = new RegExp(chatPrivateTiggerKeyword)
+  get chatPrivateTriggerRule(): RegExp | undefined {
+    const { chatPrivateTriggerKeyword, chatTriggerRule } = this;
+    let regEx = chatTriggerRule
+    if (!regEx && chatPrivateTriggerKeyword) {
+      regEx = new RegExp(chatPrivateTriggerKeyword)
     }
     return regEx
   }
@@ -53,13 +53,13 @@ export class ChatGPTBot {
       text = item[item.length - 1];
     }
     
-    const { chatTiggerRule, chatPrivateTiggerRule } = this;
+    const { chatTriggerRule, chatPrivateTriggerRule } = this;
     
-    if (privateChat && chatPrivateTiggerRule) {
-      text = text.replace(chatPrivateTiggerRule, "")
+    if (privateChat && chatPrivateTriggerRule) {
+      text = text.replace(chatPrivateTriggerRule, "")
     } else if (!privateChat) {
-      text = text.replace(this.chatGroupTiggerRegEx, "")
-      text = chatTiggerRule? text.replace(chatTiggerRule, ""): text
+      text = text.replace(this.chatGroupTriggerRegEx, "")
+      text = chatTriggerRule? text.replace(chatTriggerRule, ""): text
     }
     // remove more text via - - - - - - - - - - - - - - -
     return text
@@ -95,17 +95,17 @@ export class ChatGPTBot {
     }
   }
   // Check whether the ChatGPT processing can be triggered
-  tiggerGPTMessage(text: string, privateChat: boolean = false): boolean {
-    const { chatTiggerRule } = this;
+  triggerGPTMessage(text: string, privateChat: boolean = false): boolean {
+    const { chatTriggerRule } = this;
     let triggered = false;
     if (privateChat) {
-      const regEx = this.chatPrivateTiggerRule
+      const regEx = this.chatPrivateTriggerRule
       triggered = regEx? regEx.test(text): true;
     } else {
-      triggered = this.chatGroupTiggerRegEx.test(text);
-      // group message support `chatTiggerRule`
-      if (triggered && chatTiggerRule) {
-        triggered = chatTiggerRule.test(text.replace(this.chatGroupTiggerRegEx, ""))
+      triggered = this.chatGroupTriggerRegEx.test(text);
+      // group message support `chatTriggerRule`
+      if (triggered && chatTriggerRule) {
+        triggered = chatTriggerRule.test(text.replace(this.chatGroupTriggerRegEx, ""))
       }
     }
     if (triggered) {
@@ -168,7 +168,7 @@ export class ChatGPTBot {
     if (this.isNonsense(talker, messageType, rawText)) {
       return;
     }
-    if (this.tiggerGPTMessage(rawText, privateChat)) {
+    if (this.triggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
         return await this.onPrivateMessage(talker, text);
