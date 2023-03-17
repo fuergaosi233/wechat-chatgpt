@@ -2,6 +2,8 @@ import { config } from "./config.js";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
 import { Message } from "wechaty";
 import {sendMessage} from "./chatgpt.js";
+import {getCompletion} from "./openai.js";
+import {addSessionByUsername, setPromptByUsername} from "./data.js";
 enum MessageType {
   Unknown = 0,
 
@@ -44,7 +46,36 @@ export class ChatGPTBot {
     }
     return regEx
   }
-  async command(): Promise<void> {}
+  async command(talker:any, text:string, privateChat:boolean): Promise<void> {
+    // 找到第一个空格之前的字符串
+    const command = text.split(" ")[0];
+    console.log(`command: ${command}`);
+    switch (command) {
+      case "help":
+        await this.trySay(talker,"========\n" +
+          "/cmd prompt <PROMPT>\n" +
+          "# 设置当前会话的prompt\n" +
+          "/cmd clear\n" +
+          "# 清除自上次启动以来的所有会话\n" +
+          "========");
+        break;
+      case "prompt":
+        let prompt = text.slice(command.length+1);
+        console.log(`Prompt: ${prompt}`);
+        if (privateChat){
+          setPromptByUsername(talker.name(), prompt);
+          await this.trySay(talker,"设置成功");
+        }else{
+          setPromptByUsername(talker, prompt);
+          await this.trySay(talker,"设置成功");
+        }
+        break;
+      case "clear":
+        console.log("清除会话");
+        await this.trySay(talker,"清除成功");
+        break;
+    }
+  }
   // remove more times conversation and mention
   cleanMessage(rawText: string, privateChat: boolean = false): string {
     let text = rawText;
@@ -64,8 +95,10 @@ export class ChatGPTBot {
     // remove more text via - - - - - - - - - - - - - - -
     return text
   }
-  async getGPTMessage(text: string): Promise<string> {
-    return await sendMessage(text);
+  async getGPTMessage(talkerName: string,text: string): Promise<string> {
+    let gptMessage = await getCompletion(talkerName,text);
+    addSessionByUsername(talkerName, {assistantMsg:gptMessage});
+    return gptMessage;
   }
   // Check if the message returned by chatgpt contains masked words]
   checkChatGPTBlockWords(message: string): boolean {
@@ -145,7 +178,7 @@ export class ChatGPTBot {
   }
 
   async onPrivateMessage(talker: ContactInterface, text: string) {
-    const gptMessage = await this.getGPTMessage(text);
+    const gptMessage = await this.getGPTMessage(talker.name(),text);
     await this.trySay(talker, gptMessage);
   }
 
@@ -154,19 +187,32 @@ export class ChatGPTBot {
     text: string,
     room: RoomInterface
   ) {
-    const gptMessage = await this.getGPTMessage(text);
+    const gptMessage = await this.getGPTMessage(talker.name(),text);
     const result = `@${talker.name()} ${text}\n\n------ ${gptMessage}`;
     await this.trySay(room, result);
   }
   async onMessage(message: Message) {
-    console.log(`🎯 ${message.date()} Message: ${message}`);
     const talker = message.talker();
     const rawText = message.text();
     const room = message.room();
     const messageType = message.type();
     const privateChat = !room;
+    if (privateChat) {
+      console.log(`🤵Contact: ${talker.name()} 💬Text: ${rawText}`)
+    } else {
+      const topic = await room.topic()
+      console.log(`🚪Room: ${topic} 🤵Contact: ${talker.name()} 💬Text: ${rawText}`)
+    }
     if (this.isNonsense(talker, messageType, rawText)) {
       return;
+    }
+    if (rawText.startsWith("/cmd ")){
+      const text = rawText.slice(5)
+      if (privateChat){
+        return await this.command(talker, text, !privateChat);
+      }else{
+        return await this.command(room, text,privateChat);
+      }
     }
     if (this.triggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);
