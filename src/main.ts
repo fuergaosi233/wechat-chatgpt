@@ -2,10 +2,15 @@ import { WechatyBuilder } from "wechaty";
 import QRCode from "qrcode";
 import { ChatGPTBot } from "./bot.js";
 import {config} from "./config.js";
+
 const chatGPTBot = new ChatGPTBot();
 
 const bot =  WechatyBuilder.build({
   name: "wechat-assistant", // generate xxxx.memory-card.json and save login data for the next login
+  puppet: "wechaty-puppet-wechat",
+  puppetOptions: {
+    uos:true
+  }
 });
 async function main() {
   const initializedAt = Date.now()
@@ -37,6 +42,9 @@ async function main() {
       } catch (e) {
         console.error(e);
       }
+    })
+    .on("error",()=>{
+      console.log("ERROR !!!");
     });
   try {
     await bot.start();
