@@ -28,7 +28,10 @@
 - [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
 - [x] Add Railway deploy
 - [x] Add Fly.io deploy
-- [x] Supports custom ChatGPT API
+- [x] ~~Supports custom ChatGPT API~~
+- [x] Set prompt
+- [x] Continuous conversation
+- [x] Support command setting
 - [ ] Support proxy
 
 ## 🚀 Usage
@@ -80,7 +83,6 @@
    ```shell
    flyctl deploy
    ```
-
 
 ## Use with docker
 
@@ -135,7 +137,7 @@ npm npm dev
 
 | name                         | default                | example                                        | description                                                                                                                                                                          |
 |------------------------------|------------------------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| API                          | https://api.openai.com |                                                | API endpoint of ChatGPT                                                                                                                                                              |
+| ~~API~~                      | https://api.openai.com |                                                | ~~API endpoint of ChatGPT~~                                                                                                                                                          |
 | OPENAI_API_KEY               | 123456789              | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [create new secret key](https://platform.openai.com/account/api-keys)                                                                                                                |
 | MODEL                        | gpt-3.5-turbo          |                                                | ID of the model to use. Currently, only gpt-3.5-turbo and gpt-3.5-turbo-0301 are supported.                                                                                          |
 | TEMPERATURE                  | 0.6                    |                                                | What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. |
@@ -161,6 +163,14 @@ Add `Route` to `wrangler.toml`
 routes = [
     { pattern = "Your Custom Domain", custom_domain = true },
 ]
+```
+
+## ⌨️ Commands
+> Enter in the WeChat chat box
+```shell
+/cmd help # Show help
+/cmd prompt <PROMPT> # Set prompt
+/cmd clear # Clear all sessions since last boot
 ```
 
 ## ✨ Contributor

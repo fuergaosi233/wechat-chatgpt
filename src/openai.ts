@@ -16,21 +16,18 @@ const openai = new OpenAIApi(configuration);
 async function getCompletion(username:string,message: string): Promise<string> {
   // 先将用户输入的消息添加到数据库中
   let userData = getUserByUsername(username)
-  console.log("数据库返回: ", userData)
   const messages:ChatCompletionRequestMessage[] = [];
   if (userData) {
     // 添加用户输入的消息
-    console.log(`${username}的session:`, userData.session)
     addSessionByUsername(username, {userMsg: message})
-    console.log("Database: ", getUserByUsername(username))
-    // 填充prompt
+    // fill prompt
     if(userData.prompt!==""){
       messages.push({
         role: ChatCompletionRequestMessageRoleEnum.System,
         content: userData.prompt
       })
     }
-    // 填充messages
+    // fill messages
     userData.session.map((item) => {
       if (item.userMsg!=="") {
         messages.push({

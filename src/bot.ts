@@ -1,9 +1,8 @@
 import { config } from "./config.js";
-import { ContactInterface, RoomInterface } from "wechaty/impls";
+import {ContactImpl, ContactInterface, RoomImpl, RoomInterface} from "wechaty/impls";
 import { Message } from "wechaty";
-import {sendMessage} from "./chatgpt.js";
 import {getCompletion} from "./openai.js";
-import {addSessionByUsername, setPromptByUsername} from "./data.js";
+import {addSessionByUsername, clearUserData, setPromptByUsername} from "./data.js";
 enum MessageType {
   Unknown = 0,
 
@@ -46,13 +45,15 @@ export class ChatGPTBot {
     }
     return regEx
   }
-  async command(talker:any, text:string, privateChat:boolean): Promise<void> {
+  async command(talker:RoomInterface|ContactInterface, text:string): Promise<void> {
     // 找到第一个空格之前的字符串
     const command = text.split(" ")[0];
     console.log(`command: ${command}`);
     switch (command) {
       case "help":
         await this.trySay(talker,"========\n" +
+          "/cmd help\n" +
+          "# 显示帮助信息\n" +
           "/cmd prompt <PROMPT>\n" +
           "# 设置当前会话的prompt\n" +
           "/cmd clear\n" +
@@ -61,18 +62,23 @@ export class ChatGPTBot {
         break;
       case "prompt":
         let prompt = text.slice(command.length+1);
-        console.log(`Prompt: ${prompt}`);
-        if (privateChat){
+        if (talker instanceof RoomImpl) {
+          setPromptByUsername(talker.id, prompt);
+          await this.trySay(talker,"设置成功!");
+        }else if (talker instanceof ContactImpl) {
           setPromptByUsername(talker.name(), prompt);
-          await this.trySay(talker,"设置成功");
-        }else{
-          setPromptByUsername(talker, prompt);
           await this.trySay(talker,"设置成功");
         }
         break;
       case "clear":
         console.log("清除会话");
-        await this.trySay(talker,"清除成功");
+        if (talker instanceof RoomImpl) {
+          clearUserData(talker.id);
+          await this.trySay(talker,"清除成功!");
+        }else if (talker instanceof ContactImpl) {
+          clearUserData(talker.name());
+          await this.trySay(talker,"清除成功");
+        }
         break;
     }
   }
@@ -187,8 +193,8 @@ export class ChatGPTBot {
     text: string,
     room: RoomInterface
   ) {
-    const gptMessage = await this.getGPTMessage(talker.name(),text);
-    const result = `@${talker.name()} ${text}\n\n------ ${gptMessage}`;
+    const gptMessage = await this.getGPTMessage(room.id,text);
+    const result = `@${talker.name()} ${text}\n\n------\n ${gptMessage}`;
     await this.trySay(room, result);
   }
   async onMessage(message: Message) {
@@ -198,21 +204,18 @@ export class ChatGPTBot {
     const messageType = message.type();
     const privateChat = !room;
     if (privateChat) {
-      console.log(`🤵Contact: ${talker.name()} 💬Text: ${rawText}`)
+      console.log(`🤵 Contact: ${talker.name()} 💬 Text: ${rawText}`)
     } else {
       const topic = await room.topic()
-      console.log(`🚪Room: ${topic} 🤵Contact: ${talker.name()} 💬Text: ${rawText}`)
+      console.log(`🚪 Room: ${topic} 🤵 Contact: ${talker.name()} 💬 Text: ${rawText}`)
     }
     if (this.isNonsense(talker, messageType, rawText)) {
       return;
     }
     if (rawText.startsWith("/cmd ")){
-      const text = rawText.slice(5)
-      if (privateChat){
-        return await this.command(talker, text, !privateChat);
-      }else{
-        return await this.command(room, text,privateChat);
-      }
+      console.log(`🤖 Command: ${rawText}`)
+      const text = rawText.slice(5) // 「/cmd 」一共5个字符(注意空格)
+      return await this.command(privateChat?talker:room, text);
     }
     if (this.triggerGPTMessage(rawText, privateChat)) {
       const text = this.cleanMessage(rawText, privateChat);

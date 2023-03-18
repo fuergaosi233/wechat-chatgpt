@@ -70,4 +70,14 @@ function setPromptByUsername(username: string, prompt: string): void {
     addUser(username,prompt).prompt= prompt
   }
 }
-export {addUser, addSessionByUsername,getUserByUsername, getSessionByUsername,getAllData,setPromptByUsername}
+function clearUserData(username: string): void {
+  const user = getUserByUsername(username)
+  if (user) {
+    user.prompt = ""
+    user.session = [{
+      userMsg: "",
+      assistantMsg: ""
+    }]
+  }
+}
+export {addUser, addSessionByUsername,getUserByUsername, getSessionByUsername,getAllData,setPromptByUsername,clearUserData}
