@@ -18,7 +18,8 @@
     "qrcode": "^1.5.1",
     "uuid": "^9.0.0",
     "wechaty": "^1.20.2",
-    "wechaty-puppet-wechat": "^1.18.4"
+    "wechaty-puppet-wechat": "^1.18.4",
+    "wechaty-puppet-wechat4u": "^1.10.2"
   },
   "devDependencies": {
     "@types/async-retry": "^1.4.5",
