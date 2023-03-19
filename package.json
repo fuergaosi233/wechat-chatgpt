@@ -18,8 +18,7 @@
     "qrcode": "^1.5.1",
     "uuid": "^9.0.0",
     "wechaty": "^1.20.2",
-    "wechaty-puppet-wechat": "^1.18.4",
-    "wechaty-puppet-wechat4u": "^1.10.2"
+    "wechaty-puppet-wechat": "^1.18.4"
   },
   "devDependencies": {
     "@types/async-retry": "^1.4.5",
@@ -29,7 +28,12 @@
     "ts-node": "^10.9.1"
   },
   "nodemonConfig": {
-    "watch": "src",
+    "watch": [
+      "src/*.ts"
+    ],
+    "ignore": [
+      "src/main.ts"
+    ],
     "ext": "ts",
     "exec": "node --loader ts-node/esm src/main.ts",
     "delay": 500

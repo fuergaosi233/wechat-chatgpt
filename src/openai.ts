@@ -1,7 +1,5 @@
-import {Configuration, OpenAIApi, ChatCompletionRequestMessageRoleEnum} from "openai";
-import {addSessionByUsername, getUserByUsername} from "./data.js";
-import {ChatCompletionRequestMessage} from "openai/api";
-
+import {Configuration, CreateImageRequestResponseFormatEnum, CreateImageRequestSizeEnum, OpenAIApi} from "openai";
+import DBUtils from "./data.js";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -13,39 +11,10 @@ const openai = new OpenAIApi(configuration);
  * @param username
  * @param message
  */
-async function getCompletion(username:string,message: string): Promise<string> {
+async function chatgpt(username:string,message: string): Promise<string> {
   // 先将用户输入的消息添加到数据库中
-  let userData = getUserByUsername(username)
-  const messages:ChatCompletionRequestMessage[] = [];
-  if (userData) {
-    // 添加用户输入的消息
-    addSessionByUsername(username, {userMsg: message})
-    // fill prompt
-    if(userData.prompt!==""){
-      messages.push({
-        role: ChatCompletionRequestMessageRoleEnum.System,
-        content: userData.prompt
-      })
-    }
-    // fill messages
-    userData.session.map((item) => {
-      if (item.userMsg!=="") {
-        messages.push({
-          role: ChatCompletionRequestMessageRoleEnum.User,
-          content: item.userMsg as string
-        })
-      }
-      if (item.assistantMsg!=="") {
-        messages.push({
-          role: ChatCompletionRequestMessageRoleEnum.Assistant,
-          content: item.assistantMsg as string
-        })
-      }
-    })
-  }else{
-    return "请先执行/cmd prompt命令. \n EXAMPLE: /cmd prompt 你的prompt"
-  }
-  console.log("ChatGPT MESSages: ", messages)
+  DBUtils.addUserMessage(username, message);
+  const messages = DBUtils.getChatMessage(username);
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: messages,
@@ -58,4 +27,21 @@ async function getCompletion(username:string,message: string): Promise<string> {
   }
 }
 
-export {getCompletion};
+// const response = await openai.createImage({
+//   prompt: "a white siamese cat",
+//   n: 1,
+//   size: "1024x1024",
+// });
+// image_url = response.data.data[0].url;
+function dalle(username:string,prompt: string) {
+  const response = openai.createImage({
+    prompt: prompt,
+    n:1,
+    size: CreateImageRequestSizeEnum._256x256,
+    response_format: CreateImageRequestResponseFormatEnum.Url,
+    user: username
+  }).then((res) => res.data);
+  return response.then((res) => res.data[0].url);
+}
+
+export {chatgpt,dalle};
