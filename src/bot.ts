@@ -1,7 +1,8 @@
 import { config } from "./config.js";
 import {ContactImpl, ContactInterface, RoomImpl, RoomInterface} from "wechaty/impls";
 import { Message } from "wechaty";
-import {getCompletion} from "./openai.js";
+import {FileBox} from "file-box";
+import {chatgpt, dalle} from "./openai.js";
 import DBUtils from "./data.js";
 enum MessageType {
   Unknown = 0,
@@ -125,7 +126,7 @@ export class ChatGPTBot {
     return text
   }
   async getGPTMessage(talkerName: string,text: string): Promise<string> {
-    let gptMessage = await getCompletion(talkerName,text);
+    let gptMessage = await chatgpt(talkerName,text);
     DBUtils.addAssistantMessage(talkerName,gptMessage);
     return gptMessage;
   }
@@ -242,6 +243,21 @@ export class ChatGPTBot {
         await this.command(talker, cmdContent);
       }else{
         await this.command(room, cmdContent);
+      }
+      return;
+    }
+    // 使用DallE生成图片
+    if (rawText.startsWith("/img")){
+      console.log(`🤖 Image: ${rawText}`)
+      const imgContent = rawText.slice(4)
+      if (privateChat) {
+        let url = await dalle(talker.name(), imgContent) as string;
+        const fileBox = FileBox.fromUrl(url)
+        message.say(fileBox)
+      }else{
+        let url = await dalle(await room.topic(), imgContent) as string;
+        const fileBox = FileBox.fromUrl(url)
+        message.say(fileBox)
       }
       return;
     }
