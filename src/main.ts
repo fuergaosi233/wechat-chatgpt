@@ -6,10 +6,6 @@ const chatGPTBot = new ChatGPTBot();
 
 const bot =  WechatyBuilder.build({
   name: "wechat-assistant", // generate xxxx.memory-card.json and save login data for the next login
-  puppet: "wechaty-puppet-wechat", // generate xxxx.memory-card.json and save login data for the next login
-  puppetOptions: {
-    uos: true
-  }
 });
 async function main() {
   const initializedAt = Date.now()
@@ -41,9 +37,6 @@ async function main() {
       } catch (e) {
         console.error(e);
       }
-    })
-    .on("error",(e)=>{
-      console.log(`ERROR !!! ${e}`);
     });
   try {
     await bot.start();
