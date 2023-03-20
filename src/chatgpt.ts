@@ -29,4 +29,27 @@ const sendMessage = async (message: string) => {
   }
 }
 
-export {sendMessage};
+const sendMessageToDraw = async (message: string) => {
+  try {
+    console.log(message)
+    const response = await fetch(`https://api.openai.com/v1/images/generations`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "prompt": message,
+        "n": 1,
+        "size": "512x512"
+      }),
+    });
+    return response.json()
+      .then((data) => data['data'][0]['url']);
+  } catch (e) {
+    console.error(e)
+    return "Something went wrong"
+  }
+}
+
+export {sendMessage, sendMessageToDraw};
