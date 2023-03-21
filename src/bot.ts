@@ -2,7 +2,7 @@ import { config } from "./config.js";
 import {ContactImpl, ContactInterface, RoomImpl, RoomInterface} from "wechaty/impls";
 import { Message } from "wechaty";
 import {FileBox} from "file-box";
-import {chatgpt, dalle} from "./openai.js";
+import {chatgpt, dalle, whisper} from "./openai.js";
 import DBUtils from "./data.js";
 enum MessageType {
   Unknown = 0,
@@ -59,7 +59,9 @@ export class ChatGPTBot {
           "/cmd help\n" +
           "# 显示帮助信息\n" +
           "/cmd prompt <PROMPT>\n" +
-          "# 设置当前会话的prompt\n" +
+          "# 设置当前会话的 prompt \n" +
+          "/cmd img <PROMPT>\n" +
+          "# 根据 prompt 生成图片\n" +
           "/cmd clear\n" +
           "# 清除自上次启动以来的所有会话\n" +
           "========");
@@ -93,6 +95,7 @@ export class ChatGPTBot {
    * EXAMPLE:
    *       /cmd help
    *       /cmd prompt <PROMPT>
+   *       /cmd img <PROMPT>
    *       /cmd clear
    * @param contact
    * @param rawText
@@ -192,7 +195,7 @@ export class ChatGPTBot {
     return (
       talker.self() ||
       // TODO: add doc support
-      messageType !== MessageType.Text ||
+      !(messageType == MessageType.Text || messageType == MessageType.Audio) ||
       talker.name() === "微信团队" ||
       // 语音(视频)消息
       text.includes("收到一条视频/语音聊天消息，请在手机上查看") ||
@@ -234,6 +237,20 @@ export class ChatGPTBot {
       console.log(`🚪 Room: ${topic} 🤵 Contact: ${talker.name()} 💬 Text: ${rawText}`)
     }
     if (this.isNonsense(talker, messageType, rawText)) {
+      return;
+    }
+    if (messageType == MessageType.Audio){
+      // 保存语音文件
+      const fileBox = await message.toFileBox();
+      let fileName = "./public/" + fileBox.name;
+      await fileBox.toFile(fileName, true).catch((e) => {
+        console.log("保存语音失败",e);
+        return;
+      });
+      // Whisper
+      whisper("",fileName).then((text) => {
+        message.say(text);
+      })
       return;
     }
     if (rawText.startsWith("/cmd ")){
