@@ -18,21 +18,23 @@
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dMLG70?referralCode=bIYugQ)
 
-## 🌟 Feature
+## 🌟 Features
 
-- [x] Use ChatGPT on WeChat with [wechaty](https://github.com/wechaty/wechaty)
-  and [Official API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)
-- [x] Add conversation Support
-- [x] Add Dockerfile, you can use it with [docker](#use-with-docker---recommended-)
-- [x] Publish to Docker.hub
-- [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
-- [x] Add Railway deploy
-- [x] Add Fly.io deploy
-- [x] ~~Supports custom ChatGPT API~~
-- [x] Set prompt
-- [x] Continuous conversation
-- [x] Support command setting
-- [ ] Support proxy
+- Interact with WeChat and ChatGPT:
+   - Use ChatGPT on WeChat with [wechaty](https://github.com/wechaty/wechaty) and [Official API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)
+   - Add conversation support
+   - Support command setting
+
+- Deployment and configuration options:
+   - Add Dockerfile, deployable with [docker](#use-with-docker)
+   - Support deployment using [docker compose](#use-with-docker-compose)
+   - Support [Railway](#use-with-railway) and [Fly.io](#use-with-flyio) deployment
+
+- Other features:
+   - Support [Dall·E](https://labs.openai.com/)
+   - Support [whisper](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)
+   - Support setting prompt
+   - Support proxy (in development)
 
 ## 🚀 Usage
 - [Use with Railway](#use-with-railway)(PaaS, Free, Stable, ✅Recommended)
@@ -141,11 +143,11 @@ npm npm dev
 | OPENAI_API_KEY               | 123456789              | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [create new secret key](https://platform.openai.com/account/api-keys)                                                                                                                |
 | MODEL                        | gpt-3.5-turbo          |                                                | ID of the model to use. Currently, only gpt-3.5-turbo and gpt-3.5-turbo-0301 are supported.                                                                                          |
 | TEMPERATURE                  | 0.6                    |                                                | What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. |
-| CHAT_TRIGGER_RULE            |                        |                                                |                                                                                                                                                                                      |
-| DISABLE_GROUP_MESSAGE        | true                   |                                                |                                                                                                                                                                                      |
+| CHAT_TRIGGER_RULE            |                        |                                                | Private chat triggering rules.                                                                                                                                                       |
+| DISABLE_GROUP_MESSAGE        | true                   |                                                | Prohibited to use ChatGPT in group chat.                                                                                                                                             |
 | CHAT_PRIVATE_TRIGGER_KEYWORD |                        |                                                | Keyword to trigger ChatGPT reply in WeChat private chat                                                                                                                              |
-| BLOCK_WORDS                  |                        | "WORD1,WORD2,WORD3"                            | Chat blocker words, (works for both private and group chats, Use, Split)                                                                                                             |
-| CHATGPT_BLOCK_WORDS          |                        | "WORD1,WORD2,WORD3"                            | The blocked words returned by ChatGPT(works for both private and group chats, Use, Split)                                                                                            |
+| BLOCK_WORDS                  | "VPN"                  | "WORD1,WORD2,WORD3"                            | Chat blocker words, (works for both private and group chats, Use, Split)                                                                                                             |
+| CHATGPT_BLOCK_WORDS          | "VPN"                  | "WORD1,WORD2,WORD3"                            | The blocked words returned by ChatGPT(works for both private and group chats, Use, Split)                                                                                            |
 
 ## 📝 Using Custom ChatGPT API
 
