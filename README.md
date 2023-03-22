@@ -18,15 +18,23 @@
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dMLG70?referralCode=bIYugQ)
 
-## 🌟 Feature
+## 🌟 Features
 
-- [x] Use ChatGPT on WeChat with [wechaty](https://github.com/wechaty/wechaty)
-  and [Official API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)
-- [x] Add conversation Support
-- [x] Add Dockerfile, you can use it with [docker](#use-with-docker---recommended-)
-- [x] Publish to Docker.hub
-- [x] Deploy using [docker compose](#use-with-docker-compose---recommended-)
-- [x] Add Railway deploy
+- Interact with WeChat and ChatGPT:
+   - Use ChatGPT on WeChat with [wechaty](https://github.com/wechaty/wechaty) and [Official API](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)
+   - Add conversation support
+   - Support command setting
+
+- Deployment and configuration options:
+   - Add Dockerfile, deployable with [docker](#use-with-docker)
+   - Support deployment using [docker compose](#use-with-docker-compose)
+   - Support [Railway](#use-with-railway) and [Fly.io](#use-with-flyio) deployment
+
+- Other features:
+   - Support [Dall·E](https://labs.openai.com/)
+   - Support [whisper](https://openai.com/blog/introducing-chatgpt-and-whisper-apis)
+   - Support setting prompt
+   - Support proxy (in development)
 
 ## 🚀 Usage
 - [Use with Railway](#use-with-railway)(PaaS, Free, Stable, ✅Recommended)
@@ -78,7 +86,6 @@
    flyctl deploy
    ```
 
-
 ## Use with docker
 
 ```sh
@@ -127,6 +134,46 @@ npm run dev
 ```
 
 > Please make sure your WeChat account can log in [WeChat on web](https://wx.qq.com/)
+
+## 📝 Environment Variables
+
+| name                         | default                | example                                        | description                                                                                                                                                                          |
+|------------------------------|------------------------|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~~API~~                      | https://api.openai.com |                                                | ~~API endpoint of ChatGPT~~                                                                                                                                                          |
+| OPENAI_API_KEY               | 123456789              | sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | [create new secret key](https://platform.openai.com/account/api-keys)                                                                                                                |
+| MODEL                        | gpt-3.5-turbo          |                                                | ID of the model to use. Currently, only gpt-3.5-turbo and gpt-3.5-turbo-0301 are supported.                                                                                          |
+| TEMPERATURE                  | 0.6                    |                                                | What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. |
+| CHAT_TRIGGER_RULE            |                        |                                                | Private chat triggering rules.                                                                                                                                                       |
+| DISABLE_GROUP_MESSAGE        | true                   |                                                | Prohibited to use ChatGPT in group chat.                                                                                                                                             |
+| CHAT_PRIVATE_TRIGGER_KEYWORD |                        |                                                | Keyword to trigger ChatGPT reply in WeChat private chat                                                                                                                              |
+| BLOCK_WORDS                  | "VPN"                  | "WORD1,WORD2,WORD3"                            | Chat blocker words, (works for both private and group chats, Use, Split)                                                                                                             |
+| CHATGPT_BLOCK_WORDS          | "VPN"                  | "WORD1,WORD2,WORD3"                            | The blocked words returned by ChatGPT(works for both private and group chats, Use, Split)                                                                                            |
+
+## 📝 Using Custom ChatGPT API
+
+> https://github.com/fuergaosi233/openai-proxy
+
+```shell
+# Clone the project
+git clone https://github.com/fuergaosi233/openai-proxy
+# Install dependencies
+npm install && npm install -g wrangler && npm run build
+# Deploy to CloudFlare Workers
+npm run deploy
+# Custom domain (optional)
+Add `Route` to `wrangler.toml`
+routes = [
+    { pattern = "Your Custom Domain", custom_domain = true },
+]
+```
+
+## ⌨️ Commands
+> Enter in the WeChat chat box
+```shell
+/cmd help # Show help
+/cmd prompt <PROMPT> # Set prompt
+/cmd clear # Clear all sessions since last boot
+```
 
 ## ✨ Contributor
 
