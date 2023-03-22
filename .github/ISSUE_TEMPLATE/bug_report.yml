@@ -1,0 +1,42 @@
+name: Bug Report
+title: "[Bug]: "
+labels: ["bug"]
+description: "Create a report to help us improve."
+body:
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Welcome
+      options:
+        - label: Yes, I've searched similar issues on GitHub and didn't find any.
+          required: true
+        - label: Yes, I've included all information below (version, **FULL** config, **FULL** log, etc).
+          required: true
+  - type: checkboxes
+    id: platform
+    attributes:
+      label: Deployment Platform
+      options:
+        - label: Railway
+        - label: Fly.io
+        - label: Docker & Docker Compose
+        - label: Node.js
+  - type: textarea
+    id: problem
+    attributes:
+      label: Description of the problem
+      placeholder: Your problem description
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: wechat-chatgpt operation log
+      value: |-
+        <details>
+        ```console
+        # Paste output here
+        ```
+        </details>
+    validations:
+      required: true
