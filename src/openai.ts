@@ -25,12 +25,20 @@ async function chatgpt(username:string,message: string): Promise<string> {
     model: "gpt-3.5-turbo",
     messages: messages,
     temperature: 0.6
-  }).then((res) => res.data).catch((err) => console.log(err));
-  if (response) {
-    return (response.choices[0].message as any).content.replace(/^\n+|\n+$/g, "");
-  } else {
-    return "Something went wrong"
+  });
+  let assistantMessage = "";
+  try {
+    if (response.status === 200) {
+      assistantMessage = response.data.choices[0].message?.content.replace(/^\n+|\n+$/g, "") as string;
+    }else{
+      console.log(`Something went wrong,Code: ${response.status}, ${response.statusText}`)
+    }
+  }catch (e:any) {
+    if (e.request){
+      console.log("请求出错");
+    }
   }
+  return assistantMessage;
 }
 
 /**
