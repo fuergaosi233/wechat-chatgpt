@@ -254,9 +254,10 @@ export class ChatGPTBot {
       })
       return;
     }
-    if (rawText.startsWith("/cmd ")){
+    const text = this.cleanMessage(rawText, privateChat);
+    if (text.startsWith("/cmd ")){
       console.log(`🤖 Command: ${rawText}`)
-      const cmdContent = rawText.slice(5) // 「/cmd 」一共5个字符(注意空格)
+      const cmdContent = text.slice(5) // 「/cmd 」一共5个字符(注意空格)
       if (privateChat) {
         await this.command(talker, cmdContent);
       }else{
@@ -265,9 +266,9 @@ export class ChatGPTBot {
       return;
     }
     // 使用DallE生成图片
-    if (rawText.startsWith("/img")){
-      console.log(`🤖 Image: ${rawText}`)
-      const imgContent = rawText.slice(4)
+    if (text.startsWith("/img")){
+      console.log(`🤖 Image: ${text}`)
+      const imgContent = text.slice(4)
       if (privateChat) {
         let url = await dalle(talker.name(), imgContent) as string;
         const fileBox = FileBox.fromUrl(url)
@@ -280,7 +281,6 @@ export class ChatGPTBot {
       return;
     }
     if (this.triggerGPTMessage(rawText, privateChat)) {
-      const text = this.cleanMessage(rawText, privateChat);
       if (privateChat) {
         return await this.onPrivateMessage(talker, text);
       } else{
