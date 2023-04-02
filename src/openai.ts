@@ -4,11 +4,13 @@ import {
   CreateImageRequestSizeEnum,
   OpenAIApi
 } from "openai";
-import DBUtils from "./data.js";
 import fs from "fs";
+import DBUtils from "./data.js";
+import {config} from "./config.js";
 
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: config.openai_api_key,
+  basePath: config.api,
 });
 const openai = new OpenAIApi(configuration);
 
@@ -24,7 +26,7 @@ async function chatgpt(username:string,message: string): Promise<string> {
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: messages,
-    temperature: 0.6
+    temperature: config.temperature,
   });
   let assistantMessage = "";
   try {

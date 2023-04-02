@@ -1,7 +1,7 @@
 import {ChatCompletionRequestMessage} from "openai";
 
 export interface IConfig {
-  api: string;
+  api?: string;
   openai_api_key: string;
   model: string;
   chatTriggerRule: string;
