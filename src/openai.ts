@@ -6,11 +6,12 @@ import {
 } from "openai";
 import DBUtils from "./data.js";
 import fs from "fs";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+let apiKeys=process.env.OPENAI_API_KEYS;
+let curIndex=0;
+let configuration = new Configuration({
+  apiKey: apiKeys[curIndex],
 });
-const openai = new OpenAIApi(configuration);
+let openai = new OpenAIApi(configuration);
 
 /**
  * Get completion from OpenAI
@@ -27,9 +28,20 @@ async function chatgpt(username:string,message: string): Promise<string> {
     temperature: 0.6
   }).then((res) => res.data).catch((err) => console.log(err));
   if (response) {
+    let availableKey= apiKeys.splice(curIndex, 1);
+    apiKeys.unshift(availableKey);
+    curIndex=0;
     return (response.choices[0].message as any).content.replace(/^\n+|\n+$/g, "");
   } else {
-    return "Something went wrong"
+    if(curIndex>=apiKeys.length-1){
+      curIndex=0;
+      return "Something went wrong"
+    }else{
+      curIndex++;
+      openai=new OpenAIApi(new Configuration(apiKeys[curIndex]))
+      return chatgpt(username,message)
+    }
+   
   }
 }
 
