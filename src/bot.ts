@@ -131,8 +131,11 @@ export class ChatGPTBot {
   }
   async getGPTMessage(talkerName: string,text: string): Promise<string> {
     let gptMessage = await chatgpt(talkerName,text);
-    DBUtils.addAssistantMessage(talkerName,gptMessage);
-    return gptMessage;
+    if (gptMessage !=="") {
+      DBUtils.addAssistantMessage(talkerName,gptMessage);
+      return gptMessage;
+    }
+    return "Sorry, please try again later. 😔";
   }
   // Check if the message returned by chatgpt contains masked words]
   checkChatGPTBlockWords(message: string): boolean {
