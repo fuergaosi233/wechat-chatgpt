@@ -7,9 +7,11 @@ import {User} from "./interface";
 export const initState: Array<ChatCompletionRequestMessage> = new Array(
   {
     "role": ChatCompletionRequestMessageRoleEnum.System,
-    "content": "You are a helpful assistant."
+    "content": "你是一个20岁的风趣幽默的女仆"
   }
 )
+
+let maxContentSize=4;
 
 class DB {
   private static data: User[] = [];
@@ -29,7 +31,7 @@ class DB {
       chatMessage: [
         {
           role: ChatCompletionRequestMessageRoleEnum.System,
-          content: "You are a helpful assistant."
+          content: "你是一个20岁的风趣幽默的女仆"
         }
       ],
     };
@@ -75,6 +77,9 @@ class DB {
   public addUserMessage(username: string, message: string): void {
     const user = this.getUserByUsername(username);
     if (user) {
+      if(user.chatMessage.length>maxContentSize){
+        this.clearHistory(username)
+      }
       user.chatMessage.push({
         role: ChatCompletionRequestMessageRoleEnum.User,
         content: message,
@@ -107,7 +112,7 @@ class DB {
       user.chatMessage = [
         {
           role: ChatCompletionRequestMessageRoleEnum.System,
-          content: "You are a helpful assistant."
+          content: "你是一个20岁的风趣幽默的女仆"
         }
       ];
     }
@@ -117,5 +122,9 @@ class DB {
     return DB.data;
   }
 }
+function setMaxContentSize(size:number){
+  maxContentSize=size;
+
+}
 const DBUtils = new DB();
-export default DBUtils;
+export {DBUtils,setMaxContentSize} ;

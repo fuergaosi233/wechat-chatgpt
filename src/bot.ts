@@ -2,8 +2,8 @@ import { config } from "./config.js";
 import {ContactImpl, ContactInterface, RoomImpl, RoomInterface} from "wechaty/impls";
 import { Message } from "wechaty";
 import {FileBox} from "file-box";
-import {chatgpt, dalle, whisper} from "./openai.js";
-import DBUtils from "./data.js";
+import {chatgpt, dalle, whisper,addAPIKey,clearAPIKeys} from "./openai.js";
+import {DBUtils, setMaxContentSize} from "./data.js";
 import { regexpEncode } from "./utils.js";
 enum MessageType {
   Unknown = 0,
@@ -88,6 +88,27 @@ export class ChatGPTBot {
         }else{
           DBUtils.clearHistory(talker.name());
         }
+      }
+    },
+    {
+      name:"addKey",
+      description:"增加可用的key",
+      exec: async (talker, prompt) => {
+       addAPIKey(prompt)
+      }
+    },
+    {
+      name:"clearKey",
+      description:"删除所有的key",
+      exec: async (talker, prompt) => {
+       clearAPIKeys();
+      }
+    }, 
+     {
+      name:"setMaxContentSize",
+      description:"删除所有的key",
+      exec: async (talker, prompt) => {
+       setMaxContentSize(Number(prompt))
       }
     }
   ]
