@@ -5,6 +5,8 @@ import {FileBox} from "file-box";
 import {chatgpt, dalle, whisper} from "./openai.js";
 import DBUtils from "./data.js";
 import { regexpEncode } from "./utils.js";
+import { commander } from "./commander.js";
+
 enum MessageType {
   Unknown = 0,
   Attachment = 1, // Attach(6),
@@ -26,17 +28,41 @@ enum MessageType {
 }
 const SINGLE_MESSAGE_MAX_SIZE = 500;
 type Speaker = RoomImpl | ContactImpl;
-interface ICommand{
-  name:string;
-  description:string;
-  exec: (talker:Speaker, text:string) => Promise<void>;
-}
+
 export class ChatGPTBot {
   chatPrivateTriggerKeyword = config.chatPrivateTriggerKeyword;
   chatTriggerRule = config.chatTriggerRule? new RegExp(config.chatTriggerRule): undefined;
   disableGroupMessage = config.disableGroupMessage || false;
   botName: string = "";
-  ready = false;
+
+  constructor() {
+    commander.addHelpText("/img <关键词>\n# 根据关键词生成图片");
+
+    commander.addCommand({
+      names: ["prompt", "setPrompt", "设置提示词"],
+      params: ["<PROMPT>"],
+      description: "设置 Ai 提示词",
+      handler: async (talker: Speaker, prompt: string) => {
+        if (!prompt) {
+          return "提示词不能为空！\n\n命令格式：\n/cmd prompt <PROMPT>";
+        }
+        const talkerName = talker instanceof RoomImpl ? await talker.topic() : talker.name();
+        DBUtils.setPrompt(talkerName, prompt);
+        return "已更新提示词。";
+      }
+    });
+
+    commander.addCommand({
+      names: ["clear", "清除记录", "清空记录"],
+      description: "清除名下所有对话记录",
+      handler: async (talker: Speaker) => {
+        const talkerName = talker instanceof RoomImpl ? await talker.topic() : talker.name();
+        DBUtils.clearHistory(talkerName);
+        return "已清除名下所有对话记录。";
+      }
+    });
+  }
+
   setBotName(botName: string) {
     this.botName = botName;
   }
@@ -51,65 +77,7 @@ export class ChatGPTBot {
     }
     return regEx
   }
-  private readonly commands:ICommand[] = [
-    {
-      name: "help",
-      description: "显示帮助信息",
-      exec: async (talker) => {
-        await this.trySay(talker,"========\n" +
-          "/cmd help\n" +
-          "# 显示帮助信息\n" +
-          "/cmd prompt <PROMPT>\n" +
-          "# 设置当前会话的 prompt \n" +
-          "/img <PROMPT>\n" +
-          "# 根据 prompt 生成图片\n" +
-          "/cmd clear\n" +
-          "# 清除自上次启动以来的所有会话\n" +
-          "========");
-      }
-    },
-    {
-      name: "prompt",
-      description: "设置当前会话的prompt",
-      exec: async (talker, prompt) => {
-        if (talker instanceof RoomImpl) {
-          DBUtils.setPrompt(await talker.topic(), prompt);
-        }else {
-          DBUtils.setPrompt(talker.name(), prompt);
-        }
-      }
-    },
-    {
-      name: "clear",
-      description: "清除自上次启动以来的所有会话",
-      exec: async (talker) => {
-        if (talker instanceof RoomImpl) {
-          DBUtils.clearHistory(await talker.topic());
-        }else{
-          DBUtils.clearHistory(talker.name());
-        }
-      }
-    }
-  ]
 
-  /**
-   * EXAMPLE:
-   *       /cmd help
-   *       /cmd prompt <PROMPT>
-   *       /cmd img <PROMPT>
-   *       /cmd clear
-   * @param contact
-   * @param rawText
-   */
-  async command(contact: any, rawText: string): Promise<void> {
-    const [commandName, ...args] = rawText.split(/\s+/);
-    const command = this.commands.find(
-      (command) => command.name === commandName
-    );
-    if (command) {
-      await command.exec(contact, args.join(" "));
-    }
-  }
   // remove more times conversation and mention
   cleanMessage(rawText: string, privateChat: boolean = false): string {
     let text = rawText;
@@ -203,6 +171,8 @@ export class ChatGPTBot {
       talker.name() === "微信团队" ||
       // 语音(视频)消息
       text.includes("收到一条视频/语音聊天消息，请在手机上查看") ||
+      // 表情信息
+      text.includes('收到了一个表情，请在手机上查看') ||
       // 红包消息
       text.includes("收到红包，请在手机上查看") ||
       // Transfer message
@@ -225,7 +195,8 @@ export class ChatGPTBot {
     room: RoomInterface
   ) {
     const gptMessage = await this.getGPTMessage(await room.topic(),text);
-    const result = `@${talker.name()} ${text}\n\n------\n ${gptMessage}`;
+    const userMessage = text.length > 18 ? `${text.slice(0, 15)}...` : text;
+    const result = `@${talker.name()} ${userMessage}\n\n- - - - - - - - - - - - - - -\n\n ${gptMessage}`;
     await this.trySay(room, result);
   }
   async onMessage(message: Message) {
@@ -258,28 +229,18 @@ export class ChatGPTBot {
       return;
     }
     if (rawText.startsWith("/cmd ")){
-      console.log(`🤖 Command: ${rawText}`)
       const cmdContent = rawText.slice(5) // 「/cmd 」一共5个字符(注意空格)
-      if (privateChat) {
-        await this.command(talker, cmdContent);
-      }else{
-        await this.command(room, cmdContent);
-      }
+      await commander.exec(privateChat ? talker : room, cmdContent);
       return;
     }
     // 使用DallE生成图片
     if (rawText.startsWith("/img")){
       console.log(`🤖 Image: ${rawText}`)
-      const imgContent = rawText.slice(4)
-      if (privateChat) {
-        let url = await dalle(talker.name(), imgContent) as string;
-        const fileBox = FileBox.fromUrl(url)
-        message.say(fileBox)
-      }else{
-        let url = await dalle(await room.topic(), imgContent) as string;
-        const fileBox = FileBox.fromUrl(url)
-        message.say(fileBox)
-      }
+      const imgContent = rawText.slice(4).trim();
+      if (!imgContent) return;
+      const url = await dalle(privateChat ? talker.name() : await room.topic(), imgContent) as string;
+      const fileBox = FileBox.fromUrl(url);
+      message.say(fileBox);
       return;
     }
     if (this.triggerGPTMessage(rawText, privateChat)) {

@@ -28,6 +28,9 @@ async function main() {
       console.log(`已设置 ${config.blockWords.length} 个聊天关键词屏蔽. ${config.blockWords}`);
       console.log(`已设置 ${config.chatgptBlockWords.length} 个ChatGPT回复关键词屏蔽. ${config.chatgptBlockWords}`);
     })
+    .on("ready", async (qrcode, status) => {
+      console.log("Bot is ready");
+    })
     .on("message", async (message) => {
       if (message.date().getTime() < initializedAt) {
         return;
