@@ -78,7 +78,7 @@ class Commander {
       return;
     }
 
-    let [commandName, ...params] = text.split(" "); // Separate command and parameters
+    let [commandName, ...params] = text.split(/\s+/); // Separate command and parameters
     commandName = commandName.toLowerCase();
     for (const command of this.commands) {
       if (command.names.includes(commandName)) {
