@@ -83,9 +83,8 @@ class Commander {
     for (const command of this.commands) {
       if (command.names.includes(commandName)) {
         try {
-          const param = params.join(" ");
-          console.info(`🤖 Command: /${commandName} ${param}`);
-          const result = await command.handler(talker, params.length <= 1 ? param : params);
+          console.info(`🤖 Command: /${commandName} ${params.join(" ")}`);
+          const result = await command.handler(talker, params);
           if (result) await talker.say(this.encodeString(result));
         } catch (e) {
           console.error(`Command: /${commandName}, execution error: ${e}`);

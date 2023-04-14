@@ -42,12 +42,12 @@ export class ChatGPTBot {
       names: ["prompt", "setPrompt", "设置提示词"],
       params: ["<PROMPT>"],
       description: "设置 Ai 提示词",
-      handler: async (talker: Speaker, prompt: string) => {
-        if (!prompt) {
+      handler: async (talker: Speaker, prompt: string[]) => {
+        if (!prompt[0]) {
           return "提示词不能为空！\n\n命令格式：\n/cmd prompt <PROMPT>";
         }
         const talkerName = talker instanceof RoomImpl ? await talker.topic() : talker.name();
-        DBUtils.setPrompt(talkerName, prompt);
+        DBUtils.setPrompt(talkerName, prompt[0]);
         return "已更新提示词。";
       }
     });
