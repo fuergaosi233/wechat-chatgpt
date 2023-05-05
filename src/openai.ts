@@ -13,7 +13,7 @@ const configuration = new Configuration({
   basePath: config.api,
 });
 const openai = new OpenAIApi(configuration);
-
+console.log("结构判断0");
 /**
  * Get completion from OpenAI
  * @param username
@@ -21,6 +21,7 @@ const openai = new OpenAIApi(configuration);
  */
 async function chatgpt(username:string,message: string): Promise<string> {
   // 先将用户输入的消息添加到数据库中
+  console.log("结构判断1");
   DBUtils.addUserMessage(username, message);
   const messages = DBUtils.getChatMessage(username);
   const response = await openai.createChatCompletion({
@@ -49,7 +50,8 @@ async function chatgpt(username:string,message: string): Promise<string> {
  * @param prompt
  */
 async function dalle(username:string,prompt: string) {
-  const response = await openai.createImage({
+  console.log("结构判断2");
+  const response = awai openai.createImage({
     prompt: prompt,
     n:1,
     size: CreateImageRequestSizeEnum._256x256,
@@ -69,6 +71,7 @@ async function dalle(username:string,prompt: string) {
  * @param videoPath
  */
 async function whisper(username:string,videoPath: string): Promise<string> {
+  console.log("结构判断3");
   const file:any= fs.createReadStream(videoPath);
   const response = await openai.createTranscription(file,"whisper-1")
     .then((res) => res.data).catch((err) => console.log(err));
