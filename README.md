@@ -1,3 +1,11 @@
+<div align="center" >
+
+<h1 style="color:red; font-size:48px;">!!!! Project Archived 📦 !!!!</h1>
+
+> This project has been archived. Thank you to everyone who contributed! 🙌😔
+</div>
+
+
 <h1 align="center">Welcome to wechat-chatgpt 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
