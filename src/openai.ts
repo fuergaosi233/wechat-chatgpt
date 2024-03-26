@@ -24,7 +24,7 @@ async function chatgpt(username:string,message: string): Promise<string> {
   DBUtils.addUserMessage(username, message);
   const messages = DBUtils.getChatMessage(username);
   const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
+    model: config.model,
     messages: messages,
     temperature: config.temperature,
   });
