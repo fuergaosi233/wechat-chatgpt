@@ -25,6 +25,7 @@
 > English | [中文文档](README_ZH.md)
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dMLG70?referralCode=bIYugQ)
+[![Deploy to ZopDay](https://zop.dev/deploytozopday-inkhard.svg)](https://zop.dev/zopday/app/deploy?image=holegots/wechat-chatgpt:latest&name=wechat-chatgpt&utm_source=github&utm_medium=one_click&utm_content=wechat-chatgpt)
 
 ## 🌟 Features
 
